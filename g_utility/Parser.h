@@ -44,6 +44,19 @@ namespace graph
         Parser& operator=(const Parser&) = delete;
         ~Parser() = default;
     };
+
+    bool isBracketObject(const Parser&); // (TODO, it's like "[;]", "<,>", "{|}"...)
+
+    struct BracketPattern
+    {
+        char left;
+        char right;
+        char delimiter;
+
+        BracketPattern(char left, char right, char delimiter = 0) : left(left), right(right), delimiter(delimiter) {}
+        Parser::SpecialCharacters toSpecialCharacters() const;
+    };
+    
     
 } // namespace graph
 

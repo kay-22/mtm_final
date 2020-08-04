@@ -1,6 +1,7 @@
 #include "Parser.h"
 
 using graph::Parser;
+using graph::BracketPattern;
 using std::string;
 using std::function;
 
@@ -33,7 +34,7 @@ bool Parser::isValid(function<bool(char)> isValidChar = isalnum,
             SpecialCharacters not_contains = SpecialCharacters()) const
 {
     for (char ch : data){
-        if (!isValid && 
+        if (!isValidChar(ch) && 
             (contains.empty() || contains.find(ch) != contains.end()) && 
             (not_contains.empty() || not_contains.find(ch) == not_contains.end())) {
                 return false;
@@ -51,4 +52,9 @@ const string& Parser::getData() const
 bool Parser::operator<(const Parser& other) const
 {
     return data < other.data;
+}
+
+Parser::SpecialCharacters BracketPattern::toSpecialCharacters() const
+{
+    return Parser::SpecialCharacters({left, right, delimiter});
 }
