@@ -1,11 +1,11 @@
 #ifndef GRAPH_NAME
 #define GRAPH_NAME
 
-#include "VerticeName.h"
+#include "Name.h"
 
 namespace graph
 {
-    class AlphanumericName : public VerticeName
+    class GraphName : public Name
     {
     protected:
         /**
@@ -14,7 +14,7 @@ namespace graph
          */
         virtual bool isValidCharacter(char) override;
     public:
-        AlphanumericName(const std::string& name) : VerticeName(name, SpecialCharacters()) {}
+        GraphName(const std::string& name) : Name(name) {}
     };
 } // namespace graph
 

@@ -15,9 +15,7 @@ namespace graph
          */
         virtual bool isValidCharacter(char) override;
     public:
-        VerticeName(const std::string& name, 
-            const SpecialCharacters& special_chars = SpecialCharacters({'[', ']', ';'})) : 
-            Name(name, special_chars) {}
+        VerticeName(const std::string& name) : Name(name, {'[', ']', ';'}) {}
     };
 }
 
