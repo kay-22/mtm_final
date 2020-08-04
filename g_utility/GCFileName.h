@@ -14,7 +14,7 @@ namespace graph
          */
         virtual bool isValidCharacter(char) override;
     public:
-        GCFileName(const std::string& name) : Name(name, {'/', char(0)}) {}
+        explicit GCFileName(const std::string& name) : Name(name, {'/', char(0)}) {}
     };
 }
 

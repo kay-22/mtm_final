@@ -14,7 +14,7 @@ namespace graph
     {
     public:
         typedef std::unordered_set<char> SpecialCharacters;
-        Name(const std::string& name, const SpecialCharacters& special_chars = SpecialCharacters());
+        explicit Name(const std::string& name, const SpecialCharacters& special_chars = SpecialCharacters());
         Name(const Name&) = default;
         Name& operator=(const Name&) = default;
         bool operator<(const Name&);

@@ -14,7 +14,7 @@ namespace graph
          */
         virtual bool isValidCharacter(char) override;
     public:
-        GraphName(const std::string& name) : Name(name) {}
+        explicit GraphName(const std::string& name) : Name(name) {}
     };
 } // namespace graph
 
