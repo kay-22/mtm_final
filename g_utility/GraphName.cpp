@@ -3,7 +3,14 @@
 using graph::GraphName;
 using graph::Name;
 
-bool GraphName::isValidCharacter(char ch)
+GraphName::GraphName(const std::string& name) : Name(name) 
 {
-    return isalnum(ch);
+    if (!isValidName()){
+        //throw
+    }
+}
+
+bool GraphName::isValidName() const 
+{
+    return name.isValid(); //defualt values of name.isValid() are appropriate. checks if characters are alphanumeric 
 }

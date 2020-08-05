@@ -2,12 +2,17 @@
 
 using graph::GCFileName;
 using std::string;
+using std::function;
 
-bool GCFileName::isValidCharacter(char ch)
+GCFileName::GCFileName(const std::string& name) : Name(name)
 {
-    if (special_chars.find(ch) != special_chars.end()) {
-        return false;
+    if (!isValidName()){
+        //throw
     }
+}
 
-    return true;
+bool GCFileName::isValidName() const 
+{
+    function<bool(char)> anyChar = [](char){return true;};
+    return name.isValid(anyChar, Parser::NO_ADDITIONAL, Parser::SpecialCharacters({'/', char(0)}));
 }

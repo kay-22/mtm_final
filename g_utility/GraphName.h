@@ -9,12 +9,11 @@ namespace graph
     {
     protected:
         /**
-         * validates the given character.
-         * @return true if the character is alphanumerical 
+         * @return true if all characters are alphanumerical 
          */
-        virtual bool isValidCharacter(char) override;
+        virtual bool isValidName() const override;
     public:
-        explicit GraphName(const std::string& name) : Name(name) {}
+        explicit GraphName(const std::string& name);
     };
 } // namespace graph
 

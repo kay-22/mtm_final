@@ -16,7 +16,7 @@ bool VerticeName::isValidName() const
     if (!name.isValid(isalnum, bracket_pattern.toSpecialCharacters())) {
         return false;
     }
-    if (name.isValid(isalnum, Parser::SpecialCharacters(), bracket_pattern.toSpecialCharacters())) {
+    if (name.isValid(isalnum, Parser::NO_ADDITIONAL, bracket_pattern.toSpecialCharacters())) {
         return true;
     }
     

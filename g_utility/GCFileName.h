@@ -9,12 +9,11 @@ namespace graph
     {
     protected:
         /**
-         * validates the given character.
-         * @return false if the character is '/' or '\0'; otherwise, true.
+         * @return false if at lease one character is '/' or char(0) ; otherwise, true.
          */
-        virtual bool isValidCharacter(char) override;
+        virtual bool isValidName() const override;
     public:
-        explicit GCFileName(const std::string& name) : Name(name, {'/', char(0)}) {}
+        explicit GCFileName(const std::string& name);
     };
 }
 

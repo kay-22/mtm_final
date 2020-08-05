@@ -16,7 +16,7 @@ namespace graph
     class Name
     {
     protected:
-        Parser name; //I don't think there is a need to change the name, but if there is then update to Parser* name
+        Parser name; 
 
         /**
          * should validate a character under a decided criteria.
