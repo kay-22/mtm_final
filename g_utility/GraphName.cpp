@@ -1,12 +1,13 @@
 #include "GraphName.h"
 
 using graph::GraphName;
+using graph::GraphNameException;
 using graph::Name;
 
 GraphName::GraphName(const std::string& name) : Name(name) 
 {
     if (!isValidName()){
-        //throw
+        throw GraphNameException("failed creating GraphName. Graph names are allowed to be only alphanumeric.");
     }
 }
 

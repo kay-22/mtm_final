@@ -10,9 +10,35 @@ namespace graph
     {
         
     public:
-        NameException(const std::string& error_message = std::string("An unexpected error has occurred in Name module"));
+        NameException(const std::string& error_message = std::string(
+                        "An unexpected error has occurred in Name module"));
         virtual ~NameException() = default;
     };
+
+    class VerticeNameException : public NameException
+    {
+    public:
+        VerticeNameException(const std::string& error_message = std::string(
+                                "An unexpected error has occurred in VerticeName module"));
+        virtual ~VerticeNameException() = default;
+    };
+
+    class GraphNameException : public NameException
+    {
+    public:
+        GraphNameException(const std::string& error_message = std::string(
+                                "An unexpected error has occurred in GraphName module"));
+        virtual ~GraphNameException() = default;
+    };
+
+    class GCFileNameException : public NameException
+    {
+    public:
+        GCFileNameException(const std::string& error_message = std::string(
+                                "An unexpected error has occurred in GCFileName module"));
+        virtual ~GCFileNameException() = default;
+    };
+    
 } // namespace graph
 
 
