@@ -9,6 +9,8 @@ using std::find;
 static bool containsChar(const Parser::SpecialCharacters&, char);
 static bool containsChar(const string::const_iterator& begin, const string::const_iterator& end, char ch);
 
+const Parser::SpecialCharacters Parser::NO_ADDITIONAL; //default constructor is called
+
 string::const_iterator Parser::findFirstPair(char left_char, char right_char, string::const_iterator& end_it) const
 {
     string::const_iterator begin_it;
@@ -35,7 +37,9 @@ string::const_iterator Parser::findFirstPair(char left_char, char right_char, st
     return begin_it;
 }
 
-bool Parser::isValid(function<bool(char)> isValidChar, SpecialCharacters contains,SpecialCharacters not_contains) const
+bool Parser::isValid(function<bool(char)> isValidChar, 
+    const SpecialCharacters& contains,
+    const SpecialCharacters& not_contains) const
 {
     for (char ch : data){
         if ((!isValidChar(ch) && (!contains.empty() && !containsChar(contains, ch))) ||

@@ -17,6 +17,8 @@ namespace graph
         std::string data;
     public:
         typedef std::unordered_set<char> SpecialCharacters;
+        static const SpecialCharacters NO_ADDITIONAL;
+
         Parser(const std::string &data) : data(data) {}
 
         /**
@@ -33,12 +35,12 @@ namespace graph
          * Checks if the data is valid under certian criteria.
          * @param isValidChar a bool function whith a char argument that will check each charater in the data. 
          * Alphanumeric by default.
-         * @param contains additional characters wich may be allowed
-         * @param not_contains additional characters wich are not allowed
+         * @param contains additional characters wich may be allowed. Use Parser::NO_ADDITIONAL if there is no need.
+         * @param not_contains additional characters wich are not allowed. Use Parser::NO_ADDITIONAL if there is no need
          */
         bool isValid(std::function<bool(char)> isValidChar = isalnum, 
-            SpecialCharacters contains = SpecialCharacters(),
-            SpecialCharacters not_contains = SpecialCharacters()) const;
+            const SpecialCharacters& contains = NO_ADDITIONAL,
+            const SpecialCharacters& not_contains = NO_ADDITIONAL) const;
         
         /**
          * Checks if the data is a matching squence of a given bracket pattern 
