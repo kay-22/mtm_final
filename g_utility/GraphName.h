@@ -1,5 +1,5 @@
-#ifndef GRAPH_NAME
-#define GRAPH_NAME
+#ifndef GRAPH_NAME_H
+#define GRAPH_NAME_H
 
 #include "Name.h"
 

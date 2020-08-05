@@ -1,11 +1,11 @@
-#ifndef VERTICE_NAME
-#define VERTICE_NAME
+#ifndef VERTEX_NAME_H
+#define VERTEX_NAME_H
 
 #include "Name.h"
 
 namespace graph
 {
-    class VerticeName : public Name
+    class VertexName : public Name
     {
     private:
         BracketPattern bracket_pattern;
@@ -17,7 +17,7 @@ namespace graph
          */
         virtual bool isValidName() const override;
     public:
-        explicit VerticeName(const std::string& name);
+        explicit VertexName(const std::string& name);
     };
 }
 

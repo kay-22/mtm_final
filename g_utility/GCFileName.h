@@ -1,5 +1,5 @@
-#ifndef GC_FILE_NAME
-#define GC_FILE_NAME
+#ifndef GC_FILE_NAME_H
+#define GC_FILE_NAME_H
 
 #include "Name.h"
 

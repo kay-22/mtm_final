@@ -1,5 +1,5 @@
-#ifndef NAME_EXCEPTION
-#define NAME_EXCEPTION
+#ifndef NAME_EXCEPTION_H
+#define NAME_EXCEPTION_H
 
 #include "Exception.h"
 
@@ -15,12 +15,12 @@ namespace graph
         virtual ~NameException() = default;
     };
 
-    class VerticeNameException : public NameException
+    class VertexNameException : public NameException
     {
     public:
-        VerticeNameException(const std::string& error_message = std::string(
-                                "An unexpected error has occurred in VerticeName module"));
-        virtual ~VerticeNameException() = default;
+        VertexNameException(const std::string& error_message = std::string(
+                                "An unexpected error has occurred in VertexName module"));
+        virtual ~VertexNameException() = default;
     };
 
     class GraphNameException : public NameException

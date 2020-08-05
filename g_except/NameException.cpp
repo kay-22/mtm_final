@@ -2,7 +2,7 @@
 
 using std::string;
 using graph::NameException;
-using graph::VerticeNameException;
+using graph::VertexNameException;
 using graph::GraphNameException;
 using graph::GCFileNameException;
 
@@ -11,8 +11,8 @@ NameException::NameException(const string& error_message) : Exception("Invalid n
     this->error_message += error_message;
 }
 
-VerticeNameException::VerticeNameException(const string& error_message) : 
-    NameException("vertice name error -- ")
+VertexNameException::VertexNameException(const string& error_message) : 
+    NameException("vertex name error -- ")
 {
     this->error_message += error_message;
 }
