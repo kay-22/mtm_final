@@ -5,13 +5,16 @@
 #include <cctype>
 #include <functional>
 #include <unordered_set>
+#include <algorithm>
 
 namespace graph
 {
+    struct BracketPattern;
+
     class Parser
     {
     private:
-        const std::string data;
+        std::string data;
     public:
         typedef std::unordered_set<char> SpecialCharacters;
         Parser(const std::string &data) : data(data) {}
@@ -36,16 +39,20 @@ namespace graph
         bool isValid(std::function<bool(char)> isValidChar = isalnum, 
             SpecialCharacters contains = SpecialCharacters(),
             SpecialCharacters not_contains = SpecialCharacters()) const;
+        
+        /**
+         * Checks if the data is a matching squence of a given bracket pattern 
+         * (e.g. "[;]" and "{{}}{|}" are valid sequences, and "<.>.>" and "[];" are not)
+         */
+        bool isMatchingSequence(const BracketPattern&) const;
 
         const std::string& getData() const;
         bool operator<(const Parser&) const;
 
         Parser(const Parser&) = default;
-        Parser& operator=(const Parser&) = delete;
+        Parser& operator=(const Parser&) = default;
         ~Parser() = default;
     };
-
-    bool isBracketObject(const Parser&); // (TODO, it's like "[;]", "<,>", "{|}"...)
 
     struct BracketPattern
     {
