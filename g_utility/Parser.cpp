@@ -21,7 +21,7 @@ string::const_iterator Parser::findFirstPair(char left_char, char right_char, st
             found_left = true;
         }
         if (found_left && *it == right_char) {
-            end_it = it;
+            end_it = it+1;
             found_right = true;
             break;
         }
@@ -59,22 +59,24 @@ bool Parser::operator<(const Parser& other) const
 
 bool Parser::isMatchingSequence(const BracketPattern& bracket_pattern) const
 {
-    string current_data = data;
+    string temp_data = data;
     function<bool(char)> predicate = [&bracket_pattern](char ch) {
-                                        return containsChar(bracket_pattern.toSpecialCharacters(),ch);
+                                        return !containsChar(bracket_pattern.toSpecialCharacters(),ch);
                                      };
-    std::remove_if(current_data.begin(), current_data.end(), predicate);
+    string::const_iterator new_end = std::remove_if(temp_data.begin(), temp_data.end(), predicate);
+    temp_data.erase(new_end, temp_data.end());
 
-    if (current_data.empty()){
+    if (temp_data.empty()){
         return true; // empty sequence
     }
     
-    Parser current_parser(current_data);
+    Parser current_parser(temp_data);
+    string& current_data = current_parser.data;
     string::const_iterator right_it;
     string::const_iterator left_it = current_parser.findFirstPair(bracket_pattern.left, 
                                                                     bracket_pattern.right, right_it);
-    
-    while (current_data.empty()) {
+                                                                    
+    while (!current_data.empty()) {
         if (left_it == current_data.end()) {
             return false; //didn't find pair
         }

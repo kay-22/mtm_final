@@ -11,11 +11,10 @@ namespace graph
         BracketPattern bracket_pattern;
     protected:
         /**
-         * validates the given character.
-         * @return true if the character is alphanumerical or one of the following
+         * validates the given name.
+         * @return true if all the characters are alphanumerical or one of the following
          * characters: '[', ']', and ';'; otherwise, false.
          */
-        //virtual bool isValidCharacter(char) const override;
         virtual bool isValidName() const override;
     public:
         explicit VerticeName(const std::string& name);
