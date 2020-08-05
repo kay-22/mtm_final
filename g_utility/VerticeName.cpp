@@ -7,6 +7,9 @@ using std::string;
 
 VerticeName::VerticeName(const std::string& name) : Name(name), bracket_pattern('[', ']', ';') 
 {
+    if (name.empty()) {
+        throw VerticeNameException("name cannot be empty.");
+    }
     if (!isValidName()){
         throw VerticeNameException("failed creating VerticeName. A valid vertice name consists of "
                                     "alphanumeric characters and '[', ']', and ';'. The brackets must "
