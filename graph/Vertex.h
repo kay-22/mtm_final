@@ -16,6 +16,7 @@ namespace graph
         Vertex(const Vertex&) = default;
         Vertex& operator=(const Vertex&) = default;
         bool operator<(const Vertex&) const;
+        bool operator==(const Vertex&) const;
         ~Vertex() = default;
     };
 }
