@@ -11,6 +11,7 @@
 
 #include "Vertex.h"
 #include <g_utility.h>
+#include <g_except.h>
 
 namespace graph
 {

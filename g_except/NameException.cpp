@@ -6,7 +6,7 @@ using graph::VertexNameException;
 using graph::GraphNameException;
 using graph::GCFileNameException;
 
-NameException::NameException(const string& error_message) : Exception("Invalid name -- ")
+NameException::NameException(const string& error_message) : Exception("invalid name -- ")
 {
     this->error_message += error_message;
 }

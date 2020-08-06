@@ -16,6 +16,7 @@ void Graph::addVertex(const Vertex& vertex)
 {
     if (containsVertex(vertex)) {
         //throw already exists
+        throw GraphExsitingElementException("vertex already exits.");
     }
     data.insert(make_pair(vertex, set<Vertex>()));
 }
@@ -23,7 +24,7 @@ void Graph::addVertex(const Vertex& vertex)
 void Graph::addEdge(const Edge& edge)
 {
     if (containsEdge(edge)) {
-        //trhow already exists
+        throw GraphExsitingElementException("edge already exits.");
     }
 
     //const Vertex* to_ptr = &data.find(to_vertex)->first;
@@ -54,7 +55,7 @@ bool Graph::containsVertex(const Vertex& vertex) const
 bool Graph::containsEdge(const Edge& edge) const
 {
     if (!containsVertex(edge.first) || !containsVertex(edge.second)) {
-        //trhow no such vertex
+        throw GraphNoElementException("edge does not exits.");
     }
     //const Vertex* to_ptr = &data.find(to_vertex)->first;
     
