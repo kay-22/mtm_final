@@ -47,6 +47,7 @@ bool GraphTest::test_1()
     try
     {
         g1.containsEdge(makeEdge(Vertex("v1"), Vertex("V2")));
+        return false;
     }
     catch(const GraphNoElementException& e)
     {
@@ -73,10 +74,11 @@ bool GraphTest::test_2()
     Graph g3("aaa");
     Graph g4("zzz");
     Graph g5("z");
-    return (g4 < g5) && (g4 < g1) && (g4 < g2) && (g4 < g3) &&
-            (g5 < g3) && (g5 < g2) && (g5 < g1) &&
-            (g1 < g2) && (g1 < g3) &&
-            (g2 < g3);
+
+    return (g5 < g4) && (g1 < g5) && (g2 < g5) && (g3 < g5) &&
+            (g3 < g4) && (g2 < g4) && (g1 < g4) &&
+            (g2 < g1) && (g3 < g1) &&
+            (g3 < g2);
 }
 
 bool GraphTest::test_3()

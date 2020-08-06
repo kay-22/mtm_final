@@ -261,14 +261,13 @@ std::ostream& operator<<(std::ostream& os, const Graph& graph)
         //vertices
         result += vertex_data.first.getName() + '\n';
     }
-    result += "$\n";
+    result += '$';
 
     set<Edge> edges_set = graph.getEdgesSet();
     for (const Edge& edge : edges_set) {
         //edges
-        result += edge.first.getName() + ' ' + edge.second.getName() + '\n';
+        result += '\n' + edge.first.getName() + ' ' + edge.second.getName();
     }
-    result += '\n';
 
     os << result;
 
