@@ -84,5 +84,12 @@ GraphTest.o : g_test/GraphTest.cpp g_test/GraphTest.h ${GRPH_H} ${UTL_H} ${EXCEP
 GCTest.o : g_test/GCTest.cpp g_test/GCTest.h# ${GRPH_H} ${UTL_H} ${EXCEPT_H}
 	${CXX} ${INC} -c ${DEBUG} ${COMP} ${RELEASE} g_test/GCTest.cpp
 
+
+libgraph.a :
+	asdsda
+
+tar:
+	adsad
+
 clean:
 	rm -f ${OBJS} ${EXEC}
