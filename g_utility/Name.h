@@ -37,7 +37,7 @@ namespace graph
         Name& operator=(const Name&) = default;
         bool operator<(const Name&) const;
         virtual ~Name() = default;
-        const std::string& toString();
+        const std::string& toString() const;
     };
 }
 

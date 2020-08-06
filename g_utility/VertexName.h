@@ -7,8 +7,6 @@ namespace graph
 {
     class VertexName : public Name
     {
-    private:
-        BracketPattern bracket_pattern;
     protected:
         /**
          * validates the given name.
@@ -18,6 +16,7 @@ namespace graph
         virtual bool isValidName() const override;
     public:
         explicit VertexName(const std::string& name);
+        const BracketPattern bracket_pattern;
     };
 }
 

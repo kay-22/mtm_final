@@ -10,7 +10,7 @@ bool Name::operator<(const Name& other) const
     return name < other.name;
 }
 
-const string& Name::toString()
+const string& Name::toString() const
 {
     return name.getData();
 }

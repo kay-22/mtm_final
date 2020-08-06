@@ -14,9 +14,14 @@ namespace graph
     public:
         Vertex(const std::string& name) : name(name) {}
         Vertex(const Vertex&) = default;
+
+        const BracketPattern& getBracketPattern() const;
+        const std::string& getName() const;
+
         Vertex& operator=(const Vertex&) = default;
         bool operator<(const Vertex&) const;
         bool operator==(const Vertex&) const;
+
         ~Vertex() = default;
     };
 }
