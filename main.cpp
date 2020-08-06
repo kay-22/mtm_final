@@ -8,8 +8,6 @@ using std::string;
 using std::cout;
 using std::endl;
 
-using graph::VertexName;
-
 int main(int, char**) {
     GraphTest::run_all_tests();
 }
