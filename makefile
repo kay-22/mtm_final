@@ -43,10 +43,10 @@ ${EXEC} : ${OBJS}
 	${CXX} ${DEBUG} ${OBJS} -o $@
 
 main.o : main.cpp ${GRPH_H} ${UTL_H} ${EXCEPT_H} ${TST_H}
-	${CXX} -c ${DEBUG} ${COMP} ${RELEASE} $.cpp
+	${CXX} -c ${DEBUG} ${COMP} ${RELEASE} main.cpp
 
 GraphCalculator.o : GraphCalculator.cpp GraphCalculator.h
-	${CXX} -c ${DEBUG} ${COMP} ${RELEASE} $.cpp
+	${CXX} -c ${DEBUG} ${COMP} ${RELEASE} GraphCalculator.cpp
 
 Graph.o : graph/Graph.cpp graph/Graph.h ${UTL_H} ${EXCEPT_H}
 	${CXX} -c ${DEBUG} ${COMP} ${RELEASE} graph/Graph.cpp
