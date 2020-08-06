@@ -26,7 +26,7 @@ namespace graph
         //std::vector<Vertex> getVertices() const; //needs Vertex() to work
     public:
         Graph(const std::string& name = std::string("unnamed")) : name(name), data() {}
-        Graph(const Graph&) = default;
+        Graph(const Graph&) = default; 
         bool operator<(const Graph&) const;
         void addVertex(const Vertex&);
         void addEdge(const Edge&);
@@ -41,7 +41,7 @@ namespace graph
         //iterator end();
         const_iterator end() const;
 
-        Graph& operator=(const Graph&) = default;
+        Graph& operator=(Graph); //copies by value to avoid copying twice.
         //Graph& operator+=(const Graph&);
         //maybe implement ^= -= += and make binary non-member
         //idont think i need binary ops if no other types are needed to be casted (rip engligh)
@@ -53,7 +53,8 @@ namespace graph
 
         ~Graph() = default;
     }; 
-
+    
+    Edge makeEdge(const Vertex&, const Vertex&);
 } // namespace graph
 
 std::ostream& operator<<(std::ostream& os, const graph::Graph& graph);

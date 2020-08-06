@@ -6,11 +6,10 @@ using graph::Edge;
 using std::map;
 using std::set;
 using std::make_pair;
+using std::swap;
 //using std::vector;
 //using std::generate;
 using std::string;
-
-static Edge makeEdge(const Vertex&, const Vertex&);
 
 void Graph::addVertex(const Vertex& vertex)
 {
@@ -55,7 +54,7 @@ bool Graph::containsVertex(const Vertex& vertex) const
 bool Graph::containsEdge(const Edge& edge) const
 {
     if (!containsVertex(edge.first) || !containsVertex(edge.second)) {
-        throw GraphNoElementException("edge does not exits.");
+        throw GraphNoElementException("vertex does not exits.");
     }
     //const Vertex* to_ptr = &data.find(to_vertex)->first;
     
@@ -80,6 +79,12 @@ Graph::const_iterator Graph::begin() const
 Graph::const_iterator Graph::end() const
 {
     return data.end();
+}
+
+Graph& Graph::operator=(Graph copy)
+{
+    swap(data, copy.data); //swappable?
+    return *this;
 }
 
 bool Graph::operator<(const Graph& other) const
@@ -270,7 +275,7 @@ std::ostream& operator<<(std::ostream& os, const Graph& graph)
     return os;
 }
 
-Edge makeEdge(const Vertex& from, const Vertex& to)
+Edge graph::makeEdge(const Vertex& from, const Vertex& to)
 {
     return make_pair(from, to);
 }
