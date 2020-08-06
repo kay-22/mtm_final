@@ -35,54 +35,54 @@ OBJS = main.o \
 
 INC = -I${CURDIR}
 EXEC = gcalc
-RELEASE = -DNDEBUG
-DEBUG =#-g
+RELEASE =#-DNDEBUG
+DEBUG =-g
 COMP = -std=c++11 -Wall -Werror -pedantic-errors
 
 ${EXEC} : ${OBJS}
 	${CXX} ${DEBUG} ${OBJS} -o $@
 
 main.o : main.cpp ${GRPH_H} ${UTL_H} ${EXCEPT_H} ${TST_H}
-	${CXX} -c ${DEBUG} ${COMP} ${RELEASE} main.cpp
+	${CXX} ${INC} -c ${DEBUG} ${COMP} ${RELEASE} main.cpp
 
 GraphCalculator.o : GraphCalculator.cpp GraphCalculator.h
-	${CXX} -c ${DEBUG} ${COMP} ${RELEASE} GraphCalculator.cpp
+	${CXX} ${INC} -c ${DEBUG} ${COMP} ${RELEASE} GraphCalculator.cpp 
 
 Graph.o : graph/Graph.cpp graph/Graph.h ${UTL_H} ${EXCEPT_H}
-	${CXX} -c ${DEBUG} ${COMP} ${RELEASE} graph/Graph.cpp
+	${CXX} ${INC} -c ${DEBUG} ${COMP} ${RELEASE} graph/Graph.cpp
 
 Vertex.o : graph/Vertex.cpp graph/Vertex.h ${UTL_H} ${EXCEPT_H}
-	${CXX} -c ${DEBUG} ${COMP} ${RELEASE} graph/Vertex.cpp
+	${CXX} ${INC} -c ${DEBUG} ${COMP} ${RELEASE} graph/Vertex.cpp
 
 GraphName.o : g_utility/GraphName.cpp g_utility/GraphName.h g_utility/Name.h g_utility/Parser.h ${EXCEPT_H}
-	${CXX} -c ${DEBUG} ${COMP} ${RELEASE} g_utility/GraphName.cpp
+	${CXX} ${INC} -c ${DEBUG} ${COMP} ${RELEASE} g_utility/GraphName.cpp
 
 VertexName.o : g_utility/VertexName.cpp g_utility/VertexName.h g_utility/Name.h g_utility/Parser.h ${EXCEPT_H}
-	${CXX} -c ${DEBUG} ${COMP} ${RELEASE} g_utility/VertexName.cpp
+	${CXX} ${INC} -c ${DEBUG} ${COMP} ${RELEASE} g_utility/VertexName.cpp
 
 GCFileName.o : g_utility/GCFileName.cpp g_utility/GCFileName.h g_utility/Name.h g_utility/Parser.h ${EXCEPT_H}
-	${CXX} -c ${DEBUG} ${COMP} ${RELEASE} g_utility/GCFileName.cpp
+	${CXX} ${INC} -c ${DEBUG} ${COMP} ${RELEASE} g_utility/GCFileName.cpp
 
 Name.o : g_utility/Name.cpp g_utility/Name.h g_utility/Parser.h ${EXCEPT_H}
-	${CXX} -c ${DEBUG} ${COMP} ${RELEASE} g_utility/Name.cpp
+	${CXX} ${INC} -c ${DEBUG} ${COMP} ${RELEASE} g_utility/Name.cpp
 
 Parser.o : g_utility/Parser.cpp g_utility/Parser.h
-	${CXX} -c ${DEBUG} ${COMP} ${RELEASE} g_utility/Parser.cpp
+	${CXX} ${INC} -c ${DEBUG} ${COMP} ${RELEASE} g_utility/Parser.cpp
 
 Exception.o : g_except/Exception.cpp g_except/Exception.h
-	${CXX} -c ${DEBUG} ${COMP} ${RELEASE} g_except/Exception.cpp
+	${CXX} ${INC} -c ${DEBUG} ${COMP} ${RELEASE} g_except/Exception.cpp
 
 NameException.o : g_except/NameException.cpp g_except/NameException.h g_except/Exception.h
-	${CXX} -c ${DEBUG} ${COMP} ${RELEASE} g_except/NameException.cpp
+	${CXX} ${INC} -c ${DEBUG} ${COMP} ${RELEASE} g_except/NameException.cpp
 
 GraphException.o : g_except/GraphException.cpp g_except/GraphException.h g_except/Exception.h
-	${CXX} -c ${DEBUG} ${COMP} ${RELEASE} g_except/GraphException.cpp
+	${CXX} ${INC} -c ${DEBUG} ${COMP} ${RELEASE} g_except/GraphException.cpp
 
 GraphTest.o : g_test/GraphTest.cpp g_test/GraphTest.h ${GRPH_H} ${UTL_H} ${EXCEPT_H}
-	${CXX} -c ${DEBUG} ${COMP} ${RELEASE} g_test/GraphTest.cpp
+	${CXX} ${INC} -c ${DEBUG} ${COMP} ${RELEASE} g_test/GraphTest.cpp
 
 GCTest.o : g_test/GCTest.cpp g_test/GCTest.h# ${GRPH_H} ${UTL_H} ${EXCEPT_H}
-	${CXX} -c ${DEBUG} ${COMP} ${RELEASE} g_test/GraphTest.cpp
+	${CXX} ${INC} -c ${DEBUG} ${COMP} ${RELEASE} g_test/GCTest.cpp
 
 clean:
 	rm -f ${OBJS} ${EXEC}
