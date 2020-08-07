@@ -10,10 +10,11 @@
 #include <memory>
 #include <algorithm>
 
-#include "../g_calc/Instruction.h"
+//#include <g_calc/Instruction.h>
 
 namespace graph
 {
+    class Instruction;
     struct BracketPattern;
 
     class Parser
@@ -54,7 +55,7 @@ namespace graph
          * (e.g. "[;]" and "{{}}{|}" are valid sequences, and "<.>.>" and "[];" are not)
          */
         bool isMatchingSequence(const BracketPattern&) const;
-        std::vector<std::shared_ptr<Instruction>> makeInstructions() const;
+       std::vector<std::shared_ptr<Instruction>> makeInstructions() const;
 
         const std::string& getCurrentWord() const;
 

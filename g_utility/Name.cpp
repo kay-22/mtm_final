@@ -1,7 +1,6 @@
 #include "Name.h"
 
 using graph::Name;
-using graph::Exception;
 using std::string;
 using std::unordered_set;
 

@@ -5,8 +5,8 @@
 #include <fstream>
 #include <memory>
 
-#include <graph.h>
-#include <g_utility.h>
+#include <graph/Graph.h>
+#include <g_utility/Parser.h>
 #include "Instruction.h"
 
 namespace graph

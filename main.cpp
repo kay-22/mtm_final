@@ -11,9 +11,29 @@ using std::endl;
 using graph::VertexName;
 using graph::Exception;
 
+#include <functional>
+using std::reference_wrapper;
+
+class A
+{
+public:
+    virtual void hi() = 0;
+    virtual ~A() = default;
+};
+
+class B : public A 
+{
+    virtual void hi() override { cout << "hiB" << endl;}
+};
+
+class C : public A 
+{
+    virtual void hi() override { cout << "hiC" << endl;}
+};
+
 int main(int, char**) {
     GraphTest::run_all_tests();
-    
+
     VertexName vn1("abc");
     VertexName vn2(string("ab[]c"));
 

@@ -1,4 +1,5 @@
 #include "Parser.h"
+#include <g_calc/Instruction.h>
 
 using graph::Parser;
 using graph::BracketPattern;

@@ -15,6 +15,14 @@ void GraphCalculator::runBatch(const ifstream& input, ofstream& output)
     vector<shared_ptr<Instruction>> instructions = parser.makeInstructions();
 
     for (auto instruction : instructions) {
-        instruction->execute();
+        try {
+            if (instruction->execute() == Instruction::QUIT) {
+                break;
+            }
+
+        }
+        catch (...) { //update exceptiond
+
+        }
     }
 }

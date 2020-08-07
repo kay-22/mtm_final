@@ -5,11 +5,12 @@
 #include <cctype>
 #include <unordered_set>
 
-#include <g_except.h>
+#include <g_except/NameException.h> //do not delete
 #include "Parser.h"
 
 namespace graph
 {
+    class Parser;
     /**
      * wrapper class for string that represents a name with some conventional constraints
      */
