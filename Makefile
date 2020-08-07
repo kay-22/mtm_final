@@ -5,6 +5,10 @@ GRPH_H = graph/Vertex.h \
     graph/Graph.h \
     GraphCalculator.h
 
+GCLC_H = g_calc/GraphCalculator.h \
+	g_calc/Expression.h \
+	g_calc/Instruction.h
+
 UTL_H = g_utility/Name.h \
     g_utility/VertexName.h \
     g_utility/GraphName.h \
@@ -20,6 +24,8 @@ TST_H = g_test/GCTest.h \
 
 OBJS = main.o \
 	GraphCalculator.o \
+	Expression.o \
+	Instruction.o \
 	Graph.o \
 	Vertex.o \
 	GraphName.o \
@@ -45,8 +51,14 @@ ${EXEC} : ${OBJS}
 main.o : main.cpp ${GRPH_H} ${UTL_H} ${EXCEPT_H} ${TST_H}
 	${CXX} ${INC} -c ${DEBUG} ${COMP} ${RELEASE} main.cpp
 
-GraphCalculator.o : GraphCalculator.cpp GraphCalculator.h
-	${CXX} ${INC} -c ${DEBUG} ${COMP} ${RELEASE} GraphCalculator.cpp 
+GraphCalculator.o : g_calc/GraphCalculator.cpp g_calc/GraphCalculator.h add depe
+	${CXX} ${INC} -c ${DEBUG} ${COMP} ${RELEASE} g_calc/GraphCalculator.cpp 
+
+Expression.o : g_calc/Expression.cpp g_calc/Exception.h add depe
+	${CXX} ${INC} -c ${DEBUG} ${COMP} ${RELEASE} g_calc/Expression.cpp
+
+Instruction.o : g_calc/Instruction.cpp g_calc/Instruction.h add depe
+	${CXX} ${INC} -c ${DEBUG} ${COMP} ${RELEASE} g_calc/Instruction
 
 Graph.o : graph/Graph.cpp graph/Graph.h ${UTL_H} ${EXCEPT_H}
 	${CXX} ${INC} -c ${DEBUG} ${COMP} ${RELEASE} graph/Graph.cpp
@@ -66,7 +78,7 @@ GCFileName.o : g_utility/GCFileName.cpp g_utility/GCFileName.h g_utility/Name.h 
 Name.o : g_utility/Name.cpp g_utility/Name.h g_utility/Parser.h ${EXCEPT_H}
 	${CXX} ${INC} -c ${DEBUG} ${COMP} ${RELEASE} g_utility/Name.cpp
 
-Parser.o : g_utility/Parser.cpp g_utility/Parser.h
+Parser.o : g_utility/Parser.cpp g_utility/Parser.h add depe
 	${CXX} ${INC} -c ${DEBUG} ${COMP} ${RELEASE} g_utility/Parser.cpp
 
 Exception.o : g_except/Exception.cpp g_except/Exception.h

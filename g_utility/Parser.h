@@ -7,7 +7,10 @@
 #include <vector>
 #include <unordered_set>
 #include <fstream>
+#include <memory>
 #include <algorithm>
+
+#include "../g_calc/Instruction.h"
 
 namespace graph
 {
@@ -17,12 +20,12 @@ namespace graph
     {
     private:
         std::vector<std::string> data;
-        std::string current_word;//rename to current word
+        std::string current_word;
     public:
         typedef std::unordered_set<char> SpecialCharacters;
         static const SpecialCharacters NO_ADDITIONAL;
 
-        Parser(const std::string &current_word) : current_word(current_word) {}
+        Parser(const std::string &current_word = std::string("")) : current_word(current_word) {}
         Parser(const std::ifstream& data_stram);
 
         /**
@@ -51,8 +54,10 @@ namespace graph
          * (e.g. "[;]" and "{{}}{|}" are valid sequences, and "<.>.>" and "[];" are not)
          */
         bool isMatchingSequence(const BracketPattern&) const;
+        std::vector<std::shared_ptr<Instruction>> makeInstructions() const;
 
         const std::string& getCurrentWord() const;
+
         bool operator<(const Parser&) const;
 
         Parser(const Parser&) = default;

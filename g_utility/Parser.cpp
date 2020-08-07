@@ -2,12 +2,21 @@
 
 using graph::Parser;
 using graph::BracketPattern;
+using graph::Instruction;
 using std::string;
+using std::vector;
+using std::shared_ptr;
 using std::function;
 using std::find;
+using std::ifstream;
 
 static bool containsChar(const Parser::SpecialCharacters&, char);
 static bool containsChar(const string::const_iterator& begin, const string::const_iterator& end, char ch);
+
+Parser::Parser(const ifstream& input) : data(), current_word()
+{
+
+}
 
 const Parser::SpecialCharacters Parser::NO_ADDITIONAL; //default constructor is called
 
@@ -54,6 +63,11 @@ bool Parser::isValid(function<bool(char)> isValidChar,
 const string& Parser::getCurrentWord() const
 {
     return current_word;
+}
+
+vector<shared_ptr<Instruction>> Parser::makeInstructions() const
+{
+    return vector<shared_ptr<Instruction>>();
 }
 
 bool Parser::operator<(const Parser& other) const
