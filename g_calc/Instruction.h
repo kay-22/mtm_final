@@ -2,6 +2,8 @@
 #define INSTRUCTION_H
 
 #include <string>
+#include <vector>
+#include <set>
 
 #include <graph/Graph.h>
 
@@ -11,25 +13,107 @@ namespace graph
     //abstruct base class that executes instuctions on a given graph calculator
     {
     protected:
-        std::set<Graph> instructees;
+        std::vector<std::string> data;
     public:
+        Instruction(std::vector<std::string> data) : data(data) {}
         enum code{QUIT};
-        Instruction(std::set<Graph>& instructees) : instructees(instructees) {}
-        virtual code execute() = 0;
+        virtual code execute(std::set<Graph>& who_set) = 0;
+        virtual ~Instruction() = default;
     };
 
-    class Command : Instruction
+    class Declaration : public Instruction
     {
-    protected:
-        std::string keyword;
     public:
-    
+        virtual code execute(std::set<Graph>& who_set) override;
     };
 
-    class Delete : Command
+    class Delete : public Instruction
     {
-
+    public:
+        virtual code execute(std::set<Graph>& who_set) override;
     };
+
+    class Reset : public Instruction
+    {
+    public:
+        virtual code execute(std::set<Graph>& who_set) override;
+    };
+
+    class Quit : public Instruction
+    {
+    public:
+        virtual code execute(std::set<Graph>& who_set) override;
+    };
+
+    class Print : public Instruction
+    {
+    public:
+        virtual code execute(std::set<Graph>& who_set) override;
+    };
+
+    class Save : public Instruction
+    {
+    public:
+        virtual code execute(std::set<Graph>& who_set) override;
+    };
+    // class Command : public Instruction
+    // {
+    // protected:
+    //     std::string keyword;
+    // public:
+    //     Command(const std::string& keyword) : keyword(keyword) {}
+    
+    // };
+
+    // class Delete : public Command
+    // {
+    //     Graph target;
+    // public:
+    //     Delete(std::set<Graph>& who_set, const Graph& target) 
+    //     : Command(std::string("delete")) , target(target) {}
+        
+    //     virtual code execute() override;
+    // };
+
+    // class Reset : public Command
+    // {
+    // public:
+    //     Reset(std::set<Graph>& who_set) : Command(std::string("reset")) {}
+    //     virtual code execute() override;
+    // };    
+    
+    // class Quit : public Command
+    // {
+    // public:
+    //     Quit() : Command(std::string("quit")) {}
+    //     virtual code execute() override;
+    // };
+
+    // class Print : public Command
+    // {
+    // private:
+    //     std::string expression;
+    // public:
+    //     Print(const std::string& expression) : Command(std::string("print")), expression(expression) {}
+    //     virtual code execute() override;
+    // };
+
+    // class Save : public Command
+    // {
+    // private:
+    //     Graph target;
+    //     std::string filename;
+    // public:
+    //     Save(const Graph& target, std::string filename) : 
+    //         Command(std::string("save")), target(target), filename(filename) {}
+    //     virtual code execute() override;
+    // };
+
+    // class Declaration : public Instruction
+    // {
+
+    // };
+
 } // namespace graph
 
 

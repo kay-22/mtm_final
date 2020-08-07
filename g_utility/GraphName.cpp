@@ -10,8 +10,8 @@ GraphName::GraphName(const std::string& name) : Name(name)
         throw GraphNameException("name cannot be empty.");
     }
     if (!isValidName()){
-        throw GraphNameException("failed creating GraphName. Graph names are allowed to be only alphanumeric and "
-                                 "cannot start with a digit.");
+        throw GraphNameException("failed creating GraphName '" + name + "'. Graph names are allowed to be "
+                                 "only alphanumeric and cannot start with a digit.");
     }
 }
 

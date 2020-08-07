@@ -11,7 +11,7 @@ VertexName::VertexName(const std::string& name) : Name(name), bracket_pattern('[
         throw VertexNameException("name cannot be empty.");
     }
     if (!isValidName()){
-        throw VertexNameException("failed creating VertexName. A valid vertex name consists of "
+        throw VertexNameException("failed creating VertexName '" + name + "'. A valid vertex name consists of "
                                     "alphanumeric characters and '[', ']', and ';'. The brackets must "
                                     "form a matching sequence, and the delimiter ';' can only be between brackets.");
     }

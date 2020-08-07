@@ -33,6 +33,7 @@ namespace graph
         std::set<Edge> getEdgesSet() const;
         bool containsVertex(const Vertex&) const;
         bool containsEdge(const Edge&) const;
+        std::string makeLiteral() const;
 
         //typedef std::map<Vertex, std::set<Vertex>>::iterator iterator; // i dont want to let users to change the data directly
         typedef std::map<Vertex, std::set<Vertex>>::const_iterator const_iterator; 
@@ -53,7 +54,9 @@ namespace graph
 
         ~Graph() = default;
     }; 
-    
+
+    //makes a graph from a literal graph strign and throws appropriate exceptions
+    Graph makeGraph(const std::string& graph_name, const std::string& graph_literal);
     Edge makeEdge(const Vertex&, const Vertex&);
 } // namespace graph
 

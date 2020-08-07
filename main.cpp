@@ -57,7 +57,14 @@ int main(int, char**) {
     catch (const Exception& e) {
         cout << e.what() << endl;
     }
+       try {
+        VertexName vn8(string("[a;;b;c];[]"));
+    }
+    catch (const Exception& e) {
+        cout << e.what() << endl;
+    }
     
     VertexName vn6(string("[a;][;][a;;b;c][[];][]"));
     VertexName vn7(string("[a;;b;c][]"));
+
 }

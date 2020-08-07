@@ -15,7 +15,7 @@ void Graph::addVertex(const Vertex& vertex)
 {
     if (containsVertex(vertex)) {
         //throw already exists
-        throw GraphExsitingElementException("vertex already exits.");
+        throw GraphExsitingElementException("vertex '" + vertex.getName()+"' already exits.");
     }
     data.insert(make_pair(vertex, set<Vertex>()));
 }
@@ -23,7 +23,8 @@ void Graph::addVertex(const Vertex& vertex)
 void Graph::addEdge(const Edge& edge)
 {
     if (containsEdge(edge)) {
-        throw GraphExsitingElementException("edge already exits.");
+        throw GraphExsitingElementException("edge <" + 
+            edge.first.getName() + ", " + edge.second.getName() + "> already exits.");
     }
 
     //const Vertex* to_ptr = &data.find(to_vertex)->first;
@@ -53,12 +54,34 @@ bool Graph::containsVertex(const Vertex& vertex) const
 
 bool Graph::containsEdge(const Edge& edge) const
 {
-    if (!containsVertex(edge.first) || !containsVertex(edge.second)) {
-        throw GraphNoElementException("vertex does not exits.");
+    if (!containsVertex(edge.first)) {
+        throw GraphNoElementException("vertex '" + edge.first.getName() + "' does not exit.");
+    }
+    if (!containsVertex(edge.second)) {
+        throw GraphNoElementException("vertex '" + edge.second.getName() + "' does not exit.");
     }
     //const Vertex* to_ptr = &data.find(to_vertex)->first;
     
     return data.at(edge.first).find(edge.second) != data.at(edge.first).end();
+}
+
+string Graph::makeLiteral() const
+{
+    string result("{");
+    string edges(" | ");
+
+    for (const auto& vertex_data : data) {
+        const Vertex& vertex_i = vertex_data.first;
+        result += vertex_i.getName() + ", ";
+
+        for (const Vertex& vertex_j : vertex_data.second) {
+            edges += "<" + vertex_i.getName() + ", " + vertex_j.getName() + ">";
+        }
+    }
+    result.pop_back ();
+    result += edges + "}";
+
+    return result;
 }
 
 // Graph::iterator Graph::begin()
@@ -272,6 +295,18 @@ std::ostream& operator<<(std::ostream& os, const Graph& graph)
     os << result;
 
     return os;
+}
+
+Graph graph::makeGraph(const string& graph_name, const string& graph_literal)
+{
+    Graph result(graph_name);
+    Parser parser(graph_literal);
+    
+    if(!parser.isGraphLiteral()) {
+        //trhow
+    }
+
+    return result;
 }
 
 Edge graph::makeEdge(const Vertex& from, const Vertex& to)

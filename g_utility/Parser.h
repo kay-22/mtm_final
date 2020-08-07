@@ -25,6 +25,9 @@ namespace graph
     public:
         typedef std::unordered_set<char> SpecialCharacters;
         static const SpecialCharacters NO_ADDITIONAL;
+        static const BracketPattern GRAPH_BRACKET;
+        static const BracketPattern EDGE_BRACKET;
+        static const BracketPattern VERTEX_BRACKET;
 
         Parser(const std::string &current_word = std::string("")) : current_word(current_word) {}
         Parser(const std::ifstream& data_stram);
@@ -33,11 +36,29 @@ namespace graph
          * Finds the first mathcing pairs in the parser's current_word.
          * @param left_char the left character of the pair
          * @param right_char the right character of the pair
-         * @param end_it an output iterator to one position after the right_char
+         * @param right_it an output iterator to one position after the right_char
          * @return returns an iterator to the left character of the pair. if no pair was found, current_word.end() is returned
          */
         std::string::const_iterator findFirstPair(char left_char, char right_char, 
-            std::string::const_iterator& end_it) const;
+            std::string::const_iterator& right_it) const;
+        /**
+         * Finds the first mathcing pairs in the parser's current_word.
+         * @param bracket_pattern the pattern dedides the right and the left character of the pair appropriately
+         * @param right_it an output iterator to one position after the right_char
+         * @return returns an iterator to the left character of the pair. if no pair was found, current_word.end() is returned
+         */
+        std::string::const_iterator findFirstPair(const BracketPattern& bracket_pattern, 
+            std::string::const_iterator& right_it) const;
+
+        /** Finds the first mathcing pairs in a sub word of the current_word.
+         * @param bracket_pattern the pattern dedides the right and the left character of the pair appropriately
+         * @param right_it an output iterator to one position after the right_char
+         * @return returns an iterator to the left character of the pair. if no pair was found, current_word.end() is returned
+         */
+        std::string::const_iterator findFirstPair(std::string::const_iterator first_it, 
+            std::string::const_iterator last_it,
+            const BracketPattern& bracket_pattern, 
+            std::string::const_iterator& right_it) const;
 
         /**
          * Checks if the current_word is valid under certian criteria.
@@ -49,13 +70,37 @@ namespace graph
         bool isValid(std::function<bool(char)> isValidChar = isalnum, 
             const SpecialCharacters& contains = NO_ADDITIONAL,
             const SpecialCharacters& not_contains = NO_ADDITIONAL) const;
+
+        /**
+         * Checks a sub word of the current_word is valid under certian criteria.
+         * @param isValidChar a bool function whith a char argument that will check each charater in the current_word. 
+         * Alphanumeric by default.
+         * @param contains additional characters wich may be allowed. Use Parser::NO_ADDITIONAL if there is no need.
+         * @param not_contains additional characters wich are not allowed. Use Parser::NO_ADDITIONAL if there is no need
+         */
+        bool isValid(std::string::const_iterator first_it, std::string::const_iterator last_it, 
+            std::function<bool(char)> isValidChar = isalnum, 
+            const SpecialCharacters& contains = NO_ADDITIONAL,
+            const SpecialCharacters& not_contains = NO_ADDITIONAL) const;
         
         /**
          * Checks if the current_word is a matching squence of a given bracket pattern 
          * (e.g. "[;]" and "{{}}{|}" are valid sequences, and "<.>.>" and "[];" are not)
          */
         bool isMatchingSequence(const BracketPattern&) const;
-       std::vector<std::shared_ptr<Instruction>> makeInstructions() const;
+        /**
+         * Checks a sub string of the current_word is a matching squence of a given bracket pattern 
+         * (e.g. "[;]" and "{{}}{|}" are valid sequences, and "<.>.>" and "[];" are not)
+         */
+        bool isMatchingSequence(std::string::const_iterator first_it, std::string::const_iterator last_it,
+            const BracketPattern& bracket_pattern) const;
+
+        //checks if the current word has a pattern of {,,|<,>,,} doesn't check the names
+        bool isGraphLiteral() const;
+        typedef std::pair<std::vector<std::string>, std::vector<std::pair<std::string, std::string>>> GraphLiteralData; //good lord in heavens
+        GraphLiteralData decomposeGraphLiteral(const std::string& graph_literal);
+
+        std::vector<std::shared_ptr<Instruction>> makeInstructions() const;
 
         const std::string& getCurrentWord() const;
 
