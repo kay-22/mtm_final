@@ -17,7 +17,7 @@ string::const_iterator Parser::findFirstPair(char left_char, char right_char, st
     bool found_left = false;
     bool found_right = false;
 
-    for (string::const_iterator it = data.begin(); it != data.end(); ++it) {
+    for (string::const_iterator it = current_word.begin(); it != current_word.end(); ++it) {
         if (!found_left && *it == left_char){
             begin_it = it;
             found_left = true;
@@ -30,8 +30,8 @@ string::const_iterator Parser::findFirstPair(char left_char, char right_char, st
     }
 
     if (!found_left || !found_right) {
-        begin_it = data.end();
-        end_it = data.end();
+        begin_it = current_word.end();
+        end_it = current_word.end();
     }
 
     return begin_it;
@@ -41,7 +41,7 @@ bool Parser::isValid(function<bool(char)> isValidChar,
     const SpecialCharacters& contains,
     const SpecialCharacters& not_contains) const
 {
-    for (char ch : data){
+    for (char ch : current_word){
         if ((!isValidChar(ch) && (!contains.empty() && !containsChar(contains, ch))) ||
             (!not_contains.empty() && containsChar(not_contains, ch))) {
                 return false;
@@ -51,31 +51,31 @@ bool Parser::isValid(function<bool(char)> isValidChar,
     return true;
 }
 
-const string& Parser::getData() const
+const string& Parser::getCurrentWord() const
 {
-    return data;
+    return current_word;
 }
 
 bool Parser::operator<(const Parser& other) const
 {
-    return data < other.data;
+    return current_word < other.current_word;
 }
 
 bool Parser::isMatchingSequence(const BracketPattern& bracket_pattern) const
 {
-    string temp_data = data;
+    string temp_word = current_word;
     function<bool(char)> predicate = [&bracket_pattern](char ch) {
                                         return !containsChar(bracket_pattern.toSpecialCharacters(),ch);
                                      };
-    string::const_iterator new_end = std::remove_if(temp_data.begin(), temp_data.end(), predicate);
-    temp_data.erase(new_end, temp_data.end());
+    string::const_iterator new_end = std::remove_if(temp_word.begin(), temp_word.end(), predicate);
+    temp_word.erase(new_end, temp_word.end());
 
-    if (temp_data.empty()){
+    if (temp_word.empty()){
         return true; // empty sequence
     }
     
-    Parser current_parser(temp_data);
-    string& current_data = current_parser.data;
+    Parser current_parser(temp_word);
+    string& current_data = current_parser.current_word;
     string::const_iterator right_it;
     string::const_iterator left_it = current_parser.findFirstPair(bracket_pattern.left, 
                                                                     bracket_pattern.right, right_it);

@@ -17,5 +17,5 @@ GraphName::GraphName(const std::string& name) : Name(name)
 
 bool GraphName::isValidName() const 
 {
-    return !isdigit(name.getData().at(0)) && name.isValid(); //defualt values of name.isValid() are appropriate. checks if characters are alphanumeric 
+    return !isdigit(name.getCurrentWord().at(0)) && name.isValid(); //defualt values of name.isValid() are appropriate. checks if characters are alphanumeric 
 }

@@ -12,5 +12,5 @@ bool Name::operator<(const Name& other) const
 
 const string& Name::toString() const
 {
-    return name.getData();
+    return name.getCurrentWord();
 }

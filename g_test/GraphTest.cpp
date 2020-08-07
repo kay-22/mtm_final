@@ -31,7 +31,7 @@ bool GraphTest::test_1()
     }
     catch(const GraphExsitingElementException& e)
     {
-        std::cerr << e.what() << '\n';
+        cout << e.what() << '\n';
     }
 
     try
@@ -41,7 +41,7 @@ bool GraphTest::test_1()
     }
     catch(const GraphExsitingElementException& e)
     {
-        std::cerr << e.what() << '\n';
+        cout << e.what() << '\n';
     }
 
     try
@@ -51,7 +51,7 @@ bool GraphTest::test_1()
     }
     catch(const GraphNoElementException& e)
     {
-        std::cerr << e.what() << '\n';
+        cout << e.what() << '\n';
     }
 
     return true;
@@ -66,7 +66,7 @@ bool GraphTest::test_2()
     }
     catch(const GraphNameException& e)
     {
-        std::cerr << e.what() << '\n';
+        cout << e.what() << '\n';
     }
     
     Graph g1("abc");
