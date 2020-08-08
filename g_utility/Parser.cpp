@@ -14,6 +14,7 @@ using graph::Load;
 using graph::Empty;
 using graph::MatchingSequenceParserException;
 using graph::GraphLiteralParserException;
+using graph::EmptyExpressionException;
 using std::string;
 using std::vector;
 using std::pair;
@@ -243,6 +244,9 @@ void Parser::openExpression()
 {
     if (!isEnclosedExpression()) {
         //throw expression not properly enclosed with ()
+        throw MatchingSequenceParserException(string("please check for matching ") + 
+                                              Instruction::EXPRESSION_BRACKET.left + 
+                                              Instruction::EXPRESSION_BRACKET.right);
     }
 
     current_word = string(current_word.begin()+1, current_word.end()-1);
@@ -253,7 +257,10 @@ vector<string> Parser::getExpressionData()
 {
     vector<string> result;
     if(!isMatchingSequence(Instruction::EXPRESSION_BRACKET)) {
-        //throw expression missing ()
+        throw MatchingSequenceParserException(string("please check for matching ") + 
+                                              Instruction::EXPRESSION_BRACKET.left + 
+                                              Instruction::EXPRESSION_BRACKET.right);
+        
     }
     
     if (isEnclosedExpression()) {
@@ -261,7 +268,7 @@ vector<string> Parser::getExpressionData()
     }
 
     if (isValid(isspace)) {
-        //thrwo empty expression
+        throw EmptyExpressionException("please make sure all brackets enclose a valid expression")
     }
 
     SpecialCharacters operations_characters(Graph::OperationCharacters::toSpecialChars());
@@ -287,7 +294,9 @@ vector<string> Parser::getExpressionData()
         }
         else if (current_ch == GRAPH_BRACKET.left) {
                 if (!isMatchingSequence(GRAPH_BRACKET)) {
-                    //trhow missing }
+                    throw MatchingSequenceParserException(string("please check for matching ") + 
+                                                                 GRAPH_BRACKET.left + 
+                                                                 GRAPH_BRACKET.right);
                 }   
             getExpressionDataAux(temp_word, result, GRAPH_BRACKET);
             continue;
