@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include <set>
 
 #include <graph/Graph.h>
@@ -16,45 +17,78 @@ namespace graph
         std::vector<std::string> data;
     public:
         Instruction(std::vector<std::string> data) : data(data) {}
-        enum code{QUIT};
+        enum code{quitCode, okCode};
         virtual code execute(std::set<Graph>& who_set) = 0;
         virtual ~Instruction() = default;
+        
+        enum keyword {PRINT, DELETE, RESET, QUIT, SAVE, LOAD};
+        static const std::map<keyword, std::string> KEYWORDS;
     };
 
     class Declaration : public Instruction
     {
     public:
+        Declaration(std::vector<std::string> data) : Instruction(data) {}
         virtual code execute(std::set<Graph>& who_set) override;
+        virtual ~Declaration() = default;
+
+        static const char DECLARATION_CHAR;
     };
 
     class Delete : public Instruction
     {
     public:
+        Delete(std::vector<std::string> data) : Instruction(data) {}
         virtual code execute(std::set<Graph>& who_set) override;
+        virtual ~Delete() = default;
     };
 
     class Reset : public Instruction
     {
     public:
+        Reset(std::vector<std::string> data) : Instruction(data) {}
         virtual code execute(std::set<Graph>& who_set) override;
+        virtual ~Reset() = default;
     };
 
     class Quit : public Instruction
     {
     public:
+        Quit(std::vector<std::string> data) : Instruction(data) {}
         virtual code execute(std::set<Graph>& who_set) override;
+        virtual ~Quit() = default;
     };
 
     class Print : public Instruction
     {
     public:
+        Print(std::vector<std::string> data) : Instruction(data) {}
         virtual code execute(std::set<Graph>& who_set) override;
+        virtual ~Print() = default;
     };
 
     class Save : public Instruction
     {
     public:
+        Save(std::vector<std::string> data) : Instruction(data) {}
         virtual code execute(std::set<Graph>& who_set) override;
+        virtual ~Save() = default;
+    };
+      
+    class Load : public Instruction
+    {
+    public:
+        Load(std::vector<std::string> data) : Instruction(data) {}
+        virtual code execute(std::set<Graph>& who_set) override;
+        virtual ~Load() = default;
+    };
+
+    class Empty : public Instruction
+    {
+    public:
+        Empty() : Instruction(std::vector<std::string>()) {}
+        virtual code execute(std::set<Graph>& who_set) override;
+        virtual ~Empty() = default;
     };
     // class Command : public Instruction
     // {

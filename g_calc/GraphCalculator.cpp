@@ -9,14 +9,14 @@ using graph::GraphCalculator;
 using graph::Instruction;
 using graph::Parser;
 
-void GraphCalculator::runBatch(const ifstream& input, ofstream& output) 
+void GraphCalculator::runBatch(ifstream& input, ofstream& output) 
 {
     Parser parser(input);
     vector<shared_ptr<Instruction>> instructions = parser.makeInstructions();
 
     for (auto instruction : instructions) {
         try {
-            if (instruction->execute(who_set) == Instruction::QUIT) {
+            if (instruction->execute(who_set) == Instruction::quitCode) {
                 break;
             }
 

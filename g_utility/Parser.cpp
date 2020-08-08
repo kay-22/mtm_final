@@ -4,6 +4,14 @@
 using graph::Parser;
 using graph::BracketPattern;
 using graph::Instruction;
+using graph::Declaration;
+using graph::Quit;
+using graph::Reset;
+using graph::Delete;
+using graph::Print;
+using graph::Save;
+using graph::Load;
+using graph::Empty;
 using graph::MatchingSequenceParserException;
 using graph::GraphLiteralParserException;
 using std::string;
@@ -11,6 +19,7 @@ using std::vector;
 using std::pair;
 using std::make_pair;
 using std::shared_ptr;
+using std::make_shared;
 using std::function;
 using std::find;
 using std::ifstream;
@@ -23,10 +32,18 @@ static bool containsChar(const string::const_iterator& begin, const string::cons
 static vector<string> split(const string& data, char delimiter = ' ');
 static vector<string> split(const string& data, BracketPattern bracket_pattern);
 static void trimSideSpaces(string& string);
+static shared_ptr<Instruction> makeDeclaration(const string& target_string, string instruction_data);
+static shared_ptr<Instruction> makeCommand(const string& command_string, string instruction_data);
+static vector<string> makeCommandData(const string& command_string, string instruction_data);
 
-Parser::Parser(const ifstream& input) : data(), current_word()
+Parser::Parser(ifstream& input) : data(), current_word()
 {
-
+    for (string line; getline(input, line);) {
+        const string& cref_line = line;
+        data.push_back(cref_line);
+    }
+    //reverse(data.begin(), data.end());
+    //current_word = data.back();
 }
 
 const Parser::SpecialCharacters Parser::NO_ADDITIONAL; //default constructor is called
@@ -138,6 +155,16 @@ const string& Parser::getCurrentWord() const
     return current_word;
 }
 
+// void Parser::next()
+// {
+//     if (!data.empty()) {
+//         data.pop_back();
+//         if (!data.empty()) {
+//             current_word = data.back();
+//         }
+//     }
+// }
+
 string Parser::onlyChars(const SpecialCharacters& special_characters) const
 {
     string temp_word = current_word;
@@ -150,9 +177,40 @@ string Parser::onlyChars(const SpecialCharacters& special_characters) const
     return temp_word;
 }
 
-vector<shared_ptr<Instruction>> Parser::makeInstructions() const
+vector<shared_ptr<Instruction>> Parser::makeInstructions()
 {
+    vector<shared_ptr<Instruction>> result;
+    vector<string> instruction_data;
+    if (data.empty()) {
+        result.push_back(make_shared<Empty>());
+        return result;
+    }
+    
+    for (string instruction_string : data) {
+        trimSideSpaces(instruction_string);
 
+        if (instruction_string.empty()) {
+            result.push_back(make_shared<Empty>());
+            break;
+        }
+        
+        for(char ch : instruction_string) {
+            if (isspace(ch)) {
+                break;
+            }
+            current_word += ch;
+        }
+
+        for (auto key_it = Instruction::KEYWORDS.begin(); key_it != Instruction::KEYWORDS.end(); ++key_it) {
+            if (key_it->second == current_word) {
+                shared_ptr<Instruction> instruction = makeCommand(current_word, instruction_string);
+                result.push_back(instruction);
+            }
+            else {
+                shared_ptr<Instruction> instruction = makeDeclaration(current_word, instruction_string);
+            }
+        }
+    }
     return vector<shared_ptr<Instruction>>();
 }
 
@@ -448,4 +506,83 @@ void trimSideSpaces(string& string)
     while(!string.empty() && isspace(string.back())) {
         string.pop_back();
     }
+}
+
+shared_ptr<Instruction> makeDeclaration(const string& target_string, string instruction_data)
+{
+    vector<string> declaration_data;
+
+    declaration_data.push_back(target_string);
+
+    if (target_string.size() < instruction_data.size()){
+        instruction_data.erase(target_string.size());
+        trimSideSpaces(instruction_data);
+
+        if(instruction_data.front() !=  Declaration::DECLARATION_CHAR) {
+            declaration_data.push_back("");
+        }
+        else {
+            declaration_data.push_back(instruction_data);
+        }
+    }
+    else {
+        declaration_data.push_back("");
+    }
+    
+    shared_ptr<Instruction> declaration = make_shared<Declaration>(declaration_data);
+
+    return declaration;
+}
+
+shared_ptr<Instruction> makeCommand(const string& command_string, string instruction_data)
+{
+    const vector<string>& command_data = makeCommandData(command_string, instruction_data);
+    shared_ptr<Instruction> command;
+    
+    if (command_string == Instruction::KEYWORDS.at(Instruction::QUIT)) {
+        shared_ptr<Instruction> command = make_shared<Quit>(command_data);
+    }
+
+    else if (command_string == Instruction::KEYWORDS.at(Instruction::RESET)) {
+        command = make_shared<Reset>(command_data);
+        
+    }
+
+    else if (command_string == Instruction::KEYWORDS.at(Instruction::DELETE)) {
+        command = make_shared<Delete>(command_data);
+        
+    }
+
+    else if (command_string == Instruction::KEYWORDS.at(Instruction::PRINT)) {
+        command = make_shared<Print>(command_data);
+        
+    }
+
+    else if (command_string == Instruction::KEYWORDS.at(Instruction::SAVE)) {
+        command = make_shared<Save>(command_data);
+        
+    }
+
+    else if (command_string == Instruction::KEYWORDS.at(Instruction::LOAD)) {
+        command = make_shared<Load>(command_data);
+        
+    }
+
+    return command;
+}
+
+vector<string> makeCommandData(const string& command_string, string instruction_data)
+{
+    vector<string> result;
+    
+    result.push_back(command_string);
+    if (command_string.size() < instruction_data.size()){
+        instruction_data.erase(command_string.size());
+        result.push_back(instruction_data);
+    }
+    else {
+        result.push_back("");
+    }
+
+    return result;
 }

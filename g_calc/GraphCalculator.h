@@ -24,7 +24,7 @@ namespace graph
         //run interactive interpreter
         void run();
         //run automatic interpreter
-        void runBatch(const std::ifstream& input, std::ofstream& output);
+        void runBatch(std::ifstream& input, std::ofstream& output);
     };
 } // namespace graph
 

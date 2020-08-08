@@ -34,7 +34,7 @@ namespace graph
         static const char OBJECT_DELIMITER;
 
         Parser(const std::string &current_word = std::string("")) : current_word(current_word) {}
-        Parser(const std::ifstream& data_stram);
+        Parser(std::ifstream& data_stram);
 
         /**
          * Finds the first mathcing pairs in the parser's current_word.
@@ -107,10 +107,13 @@ namespace graph
         typedef std::pair<GraphVerticesData, GraphEdgesData> GraphLiteralData;
         GraphLiteralData decomposeGraphLiteral();
 
-        std::vector<std::shared_ptr<Instruction>> makeInstructions() const;
+        std::vector<std::shared_ptr<Instruction>> makeInstructions();
 
         std::string onlyChars(const SpecialCharacters&) const;
         const std::string& getCurrentWord() const;
+        
+        // advance current word to the next one in the data
+        void next();
 
         bool operator<(const Parser&) const;
 
