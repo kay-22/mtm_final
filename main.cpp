@@ -8,6 +8,8 @@
 using std::string;
 using std::cout;
 using std::endl;
+using graph::Graph;
+using graph::makeGraph;
 using graph::VertexName;
 using graph::Exception;
 
@@ -66,5 +68,14 @@ int main(int, char**) {
     
     VertexName vn6(string("[a;][;][a;;b;c][[];][]"));
     VertexName vn7(string("[a;;b;c][]"));
+
+    Graph ohoh = makeGraph("gg", "{a,b | <a,b>, <b, a>}");
+    cout << ohoh << endl;
+
+    string ohoh_l = ohoh.makeLiteral();
+    cout << ohoh_l << endl;
+    
+    Graph ohohoh = makeGraph("ggg", ohoh_l);
+    cout << ohohoh << endl;
 
 }

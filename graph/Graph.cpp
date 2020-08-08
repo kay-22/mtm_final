@@ -67,18 +67,19 @@ bool Graph::containsEdge(const Edge& edge) const
 
 string Graph::makeLiteral() const
 {
-    string result("{");
-    string edges(" | ");
+    string result("{"); //update later literals to Parser::GRAPH_BRACKET
+    string edges(" |");
 
     for (const auto& vertex_data : data) {
         const Vertex& vertex_i = vertex_data.first;
-        result += vertex_i.getName() + ", ";
+        result += " " + vertex_i.getName() + ",";
 
         for (const Vertex& vertex_j : vertex_data.second) {
-            edges += "<" + vertex_i.getName() + ", " + vertex_j.getName() + ">";
+            edges += " <" + vertex_i.getName() + ", " + vertex_j.getName() + ">,";
         }
     }
-    result.pop_back ();
+    result.pop_back(); // remove las ','
+    edges.pop_back(); //      ^
     result += edges + "}";
 
     return result;
@@ -301,9 +302,29 @@ Graph graph::makeGraph(const string& graph_name, const string& graph_literal)
 {
     Graph result(graph_name);
     Parser parser(graph_literal);
-    
-    if(!parser.isGraphLiteral()) {
-        //trhow
+
+    Parser::GraphLiteralData graph_data = parser.decomposeGraphLiteral();
+    Parser::GraphVerticesData vertices_data = graph_data.first;
+    Parser::GraphEdgesData edges_data = graph_data.second;
+
+    for (const string& vertex_datum : vertices_data) {
+        try{
+            const Vertex& vertex(vertex_datum);
+            result.addVertex(vertex);
+        }
+        catch(...) {//update expcept 
+
+        }
+    }
+
+    for (const auto& edge_datum : edges_data) {
+        try {
+            const Vertex& vertex_from = edge_datum.first;
+            const Vertex& vertex_to = edge_datum.second;
+            result.addEdge(makeEdge(vertex_from, vertex_to));
+        }
+        catch (...) {//update except
+        }
     }
 
     return result;

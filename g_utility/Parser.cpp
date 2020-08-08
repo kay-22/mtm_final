@@ -7,13 +7,20 @@ using graph::Instruction;
 using std::string;
 using std::vector;
 using std::pair;
+using std::make_pair;
 using std::shared_ptr;
 using std::function;
 using std::find;
 using std::ifstream;
+using std::istringstream;
+using std::getline;
+using std::reverse;
 
 static bool containsChar(const Parser::SpecialCharacters&, char);
-//static bool containsChar(const string::const_iterator& begin, const string::const_iterator& end, char ch);
+static bool containsChar(const string::const_iterator& begin, const string::const_iterator& end, char ch);
+static vector<string> split(const string& data, char delimiter = ' ');
+static vector<string> split(const string& data, const BracketPattern& bracket_pattern);
+static void trimSideSpaces(string& string);
 
 Parser::Parser(const ifstream& input) : data(), current_word()
 {
@@ -21,17 +28,15 @@ Parser::Parser(const ifstream& input) : data(), current_word()
 }
 
 const Parser::SpecialCharacters Parser::NO_ADDITIONAL; //default constructor is called
-
 const BracketPattern Parser::GRAPH_BRACKET('{', '}', '|');
 const BracketPattern Parser::EDGE_BRACKET('<', '>', ',');
 const BracketPattern Parser::VERTEX_BRACKET('[', ']', ';');
+const char Parser::OBJECT_DELIMITER = ',';
 
 string::const_iterator Parser::findFirstPair(char left_char, char right_char, string::const_iterator& right_it) const
 {
-    string::const_iterator begin_it;
+    string::const_iterator left_it;
     bool found_left = false;
-    bool found_right = false;
-
     // for (string::const_iterator it = current_word.begin(); it != current_word.end(); ++it) {
     //     if (!found_left && *it == left_char){
     //         begin_it = it;
@@ -45,19 +50,35 @@ string::const_iterator Parser::findFirstPair(char left_char, char right_char, st
     // }
 
     if (!isMatchingSequence(BracketPattern(left_char, right_char))) {
-
-    }
-
-    for (char ch : current_word) {
-        if
-    }
-
-    if (!found_left || !found_right) {
-        begin_it = current_word.end();
         right_it = current_word.end();
+        return current_word.end();
     }
 
-    return begin_it;
+    int count = 0;
+    for (string::const_iterator it = current_word.begin(); it != current_word.end(); ++it) {
+        if (*it == left_char) {
+            count++;
+            if (!found_left) {
+                found_left = true;
+            }
+        }
+        else if (*it == right_char) {
+            count--;
+            right_it = it+1;
+        }
+        if (found_left && count == 0) {
+            break;
+        }
+    }
+
+    left_it = find(current_word.begin(), current_word.end(), left_char);
+
+    // if (!found_left || !found_right) {
+    //     begin_it = current_word.end();
+    //     right_it = current_word.end();
+    // }
+
+    return left_it;
 }
 
 string::const_iterator Parser::findFirstPair(const BracketPattern& bracket_pattern, 
@@ -93,7 +114,7 @@ bool Parser::isValid(function<bool(char)> isValidChar,
     const SpecialCharacters& not_contains) const
 {
     for (char ch : current_word){
-        if ((!isValidChar(ch) && (!contains.empty() && !containsChar(contains, ch))) ||
+        if ((!isValidChar(ch) && (contains.empty() || !containsChar(contains, ch))) ||
             (!not_contains.empty() && containsChar(not_contains, ch))) {
                 return false;
             }
@@ -115,6 +136,18 @@ const string& Parser::getCurrentWord() const
     return current_word;
 }
 
+string Parser::onlyChars(const SpecialCharacters& special_characters) const
+{
+    string temp_word = current_word;
+    function<bool(char)> predicate = [&special_characters](char ch) {
+                                        return !containsChar(special_characters,ch);
+                                     };
+    string::const_iterator new_end = std::remove_if(temp_word.begin(), temp_word.end(), predicate);
+    temp_word.erase(new_end, temp_word.end());
+
+    return temp_word;
+}
+
 vector<shared_ptr<Instruction>> Parser::makeInstructions() const
 {
     return vector<shared_ptr<Instruction>>();
@@ -127,19 +160,13 @@ bool Parser::operator<(const Parser& other) const
 
 bool Parser::isMatchingSequence(const BracketPattern& bracket_pattern) const
 {
-    string temp_word = current_word;
-    function<bool(char)> predicate = [&bracket_pattern](char ch) {
-                                        return !containsChar(bracket_pattern.toSpecialCharacters(),ch);
-                                     };
-    string::const_iterator new_end = std::remove_if(temp_word.begin(), temp_word.end(), predicate);
-    temp_word.erase(new_end, temp_word.end());
-
-    if (temp_word.empty()){
+    string only_pattern = onlyChars(bracket_pattern.toSpecialCharacters());
+    if (only_pattern.empty()){
         return true; // empty sequence
     }
     
     int count = 0;
-    for (char ch : temp_word)
+    for (char ch : only_pattern)
     {
         if (ch == bracket_pattern.left) {
             count++;
@@ -203,77 +230,149 @@ bool Parser::isMatchingSequence(string::const_iterator first_it, string::const_i
 
 bool Parser::isGraphLiteral() const 
 {
-    BracketPattern edge_bracket(EDGE_BRACKET.left, EDGE_BRACKET.right); //without delimiter
+    string only_graph_pattern = onlyChars(GRAPH_BRACKET.toSpecialCharacters());
 
+    if (only_graph_pattern == string("{}")) {
+        return true; //no edge list (doesn't check vertices names)
+    }
+    if (only_graph_pattern != string("{|}")) {
+        return false;
+    }
+    
     string::const_iterator right_it;
-    string::const_iterator left_it = findFirstPair(current_word.begin()+1, current_word.end(), GRAPH_BRACKET, right_it); // not sure if right iterators are returend
-    if (left_it != current_word.end()) {
-        return false; //found '{' in the middle
-    }
+    string::const_iterator left_it = findFirstPair(GRAPH_BRACKET.delimiter, GRAPH_BRACKET.right, right_it);
 
-    left_it = findFirstPair(GRAPH_BRACKET, right_it);
-    if (left_it != current_word.begin() || right_it != current_word.end()) {
-        return false;// found '}' in the middle, or didn't find pair at all.
-    }
+    //string only_edge_pattern = onlyChars(EDGE_BRACKET.toSpecialCharacters());
 
-    left_it = findFirstPair(GRAPH_BRACKET.delimiter, GRAPH_BRACKET.delimiter, right_it);
-    if (left_it != current_word.end()) {
-        return false; //too many delimiters
-    }
+    // Parser current_data(string(left_it, right_it));
+    // left_it = current_data.current_word.begin();
+    // right_it = current_data.current_word.end();
 
-    function<bool(char)> myisspace = [](char ch){return ch==' ';};
-
-    left_it = findFirstPair(GRAPH_BRACKET.delimiter, GRAPH_BRACKET.right, right_it);
-    if (right_it-left_it-1 == 0 || isValid(left_it+1, right_it-1, myisspace)){
+    BracketPattern edge_bracket(EDGE_BRACKET.left, EDGE_BRACKET.right); //no delimiter
+    //function<bool(char)> myisspace = [](char ch){return ch==' ';};
+    //[](char ch){return ch==' ';});
+    if (right_it-left_it-1 == 0 || isValid(left_it+1, right_it-1, isspace)){
         return true; //empty edge list
     }
-    if (isMatchingSequence(left_it, right_it, edge_bracket)) {
-        return false; // edge list is not a matching sequence (didn't check delimiter)
+    if (!isMatchingSequence(left_it, right_it, edge_bracket) || !containsChar(left_it, right_it, EDGE_BRACKET.right)) {
+        return false;//edge list is not a matching sequence, nor edges where found.
+    }
+    // string::const_iterator current_right_it;
+    // string::const_iterator current_left_it = current_data.findFirstPair(edge_bracket, current_right_it);
+    Parser temp_parser(string(left_it+1, right_it-1));
+
+    string::const_iterator new_end = std::remove_if(temp_parser.current_word.begin(), 
+                                                    temp_parser.current_word.end(),
+                                                    isspace);
+    temp_parser.current_word.erase(new_end, temp_parser.current_word.end());
+    //at least one edge
+    int edge_counter = 0;
+    while (containsChar(temp_parser.current_word.begin(), temp_parser.current_word.end(), EDGE_BRACKET.right)) {
+        left_it = temp_parser.findFirstPair(edge_bracket, right_it);
+        temp_parser.current_word.erase(left_it, right_it);
+        edge_counter++;
     }
 
-    left_it = findFirstPair(left_it, right_it, edge_bracket, right_it);
-    if (left_it == current_word.end()) {
-        return false; // found something like {a,b|$%#$#%#$%}
+
+    if (!temp_parser.current_word.empty() &&
+        !temp_parser.isValid([](char ch) {return ch==OBJECT_DELIMITER;})) {
+        return false;//found something between '|' and '}' other than an edge or ','
     }
 
-    //edge list is not empty
-    left_it = findFirstPair(GRAPH_BRACKET.delimiter, edge_bracket.left, right_it);
-    if (right_it-left_it-1 > 0 && !isValid(left_it+1, right_it-1, myisspace)) {
-        return false; // found something between '|' and first '<'
+    if (edge_counter-1 > int(temp_parser.getCurrentWord().size())) {
+        return false; // not enough ',' between edges
     }
-    BracketPattern flipped_edge_bracket(edge_bracket.right, edge_bracket.left);
+//     BracketPattern edge_bracket(EDGE_BRACKET.left, EDGE_BRACKET.right); //without delimiter
 
-    left_it = findFirstPair(left_it+1, current_word.end(), flipped_edge_bracket, right_it);
-    while (left_it != current_word.end()) {
-        if (!isValid(myisspace, SpecialCharacters({','}))) {
-            return false;// found something between edges other than ','
-        }
-        left_it = findFirstPair(left_it+1, current_word.end(), flipped_edge_bracket, right_it);
-    }
+//     string::const_iterator right_it;
+//     string::const_iterator left_it = findFirstPair(current_word.begin()+1, current_word.end(), GRAPH_BRACKET, right_it); // not sure if right iterators are returend
+//     if (left_it != current_word.end()) {
+//         return false; //found '{' in the middle
+//     }
+
+//     left_it = findFirstPair(GRAPH_BRACKET, right_it);
+//     if (left_it != current_word.begin() || right_it != current_word.end()) {
+//         return false;// found '}' in the middle, or didn't find pair at all.
+//     }
+
+//     left_it = findFirstPair(GRAPH_BRACKET.delimiter, GRAPH_BRACKET.delimiter, right_it);
+//     if (left_it != current_word.end()) {
+//         return false; //too many delimiters
+//     }
+
+//     function<bool(char)> myisspace = [](char ch){return ch==' ';};
+
+//     left_it = findFirstPair(GRAPH_BRACKET.delimiter, GRAPH_BRACKET.right, right_it);
+//     if (right_it-left_it-1 == 0 || isValid(left_it+1, right_it-1, myisspace)){
+//         return true; //empty edge list
+//     }
+//     if (isMatchingSequence(left_it, right_it, edge_bracket)) {
+//         return false; // edge list is not a matching sequence (didn't check delimiter)
+//     }
+
+//     left_it = findFirstPair(left_it, right_it, edge_bracket, right_it);
+//     if (left_it == current_word.end()) {
+//         return false; // found something like {a,b|$%#$#%#$%}
+//     }
+
+//     //edge list is not empty
+//     left_it = findFirstPair(GRAPH_BRACKET.delimiter, edge_bracket.left, right_it);
+//     if (right_it-left_it-1 > 0 && !isValid(left_it+1, right_it-1, myisspace)) {
+//         return false; // found something between '|' and first '<'
+//     }
+//     BracketPattern flipped_edge_bracket(edge_bracket.right, edge_bracket.left);
+
+//     left_it = findFirstPair(left_it+1, current_word.end(), flipped_edge_bracket, right_it);
+//     while (left_it != current_word.end()) {
+//         if (!isValid(myisspace, SpecialCharacters({','}))) {
+//             return false;// found something between edges other than ','
+//         }
+//         left_it = findFirstPair(left_it+1, current_word.end(), flipped_edge_bracket, right_it);
+//     }
 
 return true;
 }
 
-Parser::GraphLiteralData Parser::decomposeGraphLiteral(const string& graph_literal)
+Parser::GraphLiteralData Parser::decomposeGraphLiteral()
 {
-    vector<string> vertices_data;
-    vector<pair<string, string>> edges_data;
+    GraphVerticesData vertices_data;
+    GraphEdgesData edges_data;
 
     if (!isGraphLiteral()) {
         //throw
+        //std::cout <<" oh";
     }
 
-    string current_data = graph_literal;
-    current_data.erase(0);
-    while (!current_data.empty()) {
+    string::const_iterator graph_delim_it = find(current_word.begin(), current_word.end(), GRAPH_BRACKET.delimiter);
+    
+    string vertices_data_string(current_word.cbegin()+1, graph_delim_it);
+    vertices_data = split(vertices_data_string, OBJECT_DELIMITER);
+    
+    string temp_edges_data_string(graph_delim_it, current_word.cend());
+    vector<string> temp_edges_data = split(temp_edges_data_string, EDGE_BRACKET);
 
+    for (string edge_datum : temp_edges_data) {
+        size_t edge_delim_pos = edge_datum.find(EDGE_BRACKET.delimiter);
+        string vertex_from(edge_datum.substr(1, edge_delim_pos-1)); //must ignore the '<' and ','
+        string vertex_to(edge_datum.substr(edge_delim_pos + 1, edge_datum.size()-1 - edge_delim_pos-1)); //must ignore ',' and '>'
+
+        trimSideSpaces(vertex_from);
+        trimSideSpaces(vertex_to);
+
+        edges_data.push_back(make_pair(vertex_from, vertex_to));
     }
-    return GraphLiteralData();
+
+    return makeGraphLiteralData(vertices_data, edges_data);
 }
 
 Parser::SpecialCharacters BracketPattern::toSpecialCharacters() const
 {
     return Parser::SpecialCharacters({left, right, delimiter});
+}
+Parser::GraphLiteralData graph::makeGraphLiteralData(const Parser::GraphVerticesData& vertices_data, 
+                                                     const Parser::GraphEdgesData& edges_data)
+{
+    return make_pair(vertices_data, edges_data);
 }
 
 bool containsChar(const Parser::SpecialCharacters& special_chars, char ch)
@@ -281,13 +380,70 @@ bool containsChar(const Parser::SpecialCharacters& special_chars, char ch)
     return special_chars.find(ch) != special_chars.end();
 }
 
-// bool containsChar(const string::const_iterator& begin, const string::const_iterator& end, char ch)
-// {
-//     for (string::const_iterator it = begin; it != end; ++it) {
-//         if (*it == ch) {
-//             return true;
-//         }
-//     }
+bool containsChar(const string::const_iterator& begin, const string::const_iterator& end, char ch)
+{
+    string::const_iterator it = find(begin, end, ch);
+    // for (string::const_iterator it = begin; it != end; ++it) {
+    //     if (*it == ch) {
+    //         return true;
+    //     }
+    // }
 
-//     return false;
-// }
+    return it != end;
+}
+
+vector<string> split(const string& data, char delimiter)
+{
+    vector<string> data_vector;
+    istringstream data_input(data);
+    for (string datum_string; getline(data_input, datum_string, delimiter);){
+        if (!isspace(delimiter)) {
+            trimSideSpaces(datum_string);
+        }
+        data_vector.push_back(datum_string);
+    }
+
+    return data_vector;
+}
+
+vector<string> split(const string& data, const BracketPattern& bracket_pattern)
+{
+    vector<string> data_vector;
+
+    Parser current_parser_data(data);
+    if(!current_parser_data.isMatchingSequence(bracket_pattern)) {
+        //throw
+    }
+
+    string current_data(data);
+    while (current_data.find(bracket_pattern.left) != string::npos) {
+        string::const_iterator right_it;
+        string::const_iterator left_it = current_parser_data.findFirstPair(bracket_pattern, right_it);
+        
+        data_vector.push_back(string(left_it,right_it));
+
+        size_t right_pos = right_it - current_parser_data.getCurrentWord().begin();
+        size_t left_pos = left_it - current_parser_data.getCurrentWord().begin();
+        size_t count = right_pos - left_pos;
+
+        current_data.erase(left_pos, count);
+        current_parser_data = Parser(current_data);
+    }
+    return data_vector;   
+}
+
+void trimSideSpaces(string& string)
+{
+    size_t count = 0;
+    for (char ch : string){
+        if (!isspace(ch)) {
+            break;
+        }
+        count++;
+    }
+    string.erase(0,count);
+
+    while(!string.empty() && isspace(string.back())) {
+        string.pop_back();
+    }
+}

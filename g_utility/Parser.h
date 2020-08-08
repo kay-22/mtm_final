@@ -7,8 +7,10 @@
 #include <vector>
 #include <unordered_set>
 #include <fstream>
+#include <sstream>
 #include <memory>
 #include <algorithm>
+
 
 //#include <g_calc/Instruction.h>
 
@@ -28,6 +30,7 @@ namespace graph
         static const BracketPattern GRAPH_BRACKET;
         static const BracketPattern EDGE_BRACKET;
         static const BracketPattern VERTEX_BRACKET;
+        static const char OBJECT_DELIMITER;
 
         Parser(const std::string &current_word = std::string("")) : current_word(current_word) {}
         Parser(const std::ifstream& data_stram);
@@ -97,11 +100,15 @@ namespace graph
 
         //checks if the current word has a pattern of {,,|<,>,,} doesn't check the names
         bool isGraphLiteral() const;
-        typedef std::pair<std::vector<std::string>, std::vector<std::pair<std::string, std::string>>> GraphLiteralData; //good lord in heavens
-        GraphLiteralData decomposeGraphLiteral(const std::string& graph_literal);
+        //typedef std::pair<std::vector<std::string>, std::vector<std::pair<std::string, std::string>>> GraphLiteralData; //good lord in heavens
+        typedef std::vector<std::string> GraphVerticesData;
+        typedef std::vector<std::pair<std::string, std::string>> GraphEdgesData;
+        typedef std::pair<GraphVerticesData, GraphEdgesData> GraphLiteralData;
+        GraphLiteralData decomposeGraphLiteral();
 
         std::vector<std::shared_ptr<Instruction>> makeInstructions() const;
 
+        std::string onlyChars(const SpecialCharacters&) const;
         const std::string& getCurrentWord() const;
 
         bool operator<(const Parser&) const;
@@ -121,6 +128,8 @@ namespace graph
         Parser::SpecialCharacters toSpecialCharacters() const;
     };
     
+    Parser::GraphLiteralData makeGraphLiteralData(const Parser::GraphVerticesData&, const Parser::GraphEdgesData&);
+    //Parser::GraphEdgesData makeGraphEdgesData(const std::string& from_vertex_data, const std::string& to_vertex_data);
     
 } // namespace graph
 
