@@ -16,7 +16,7 @@ void GraphCalculator::runBatch(ifstream& input, ofstream& output)
 
     for (auto instruction : instructions) {
         try {
-            if (instruction->execute(who_set) == Instruction::quitCode) {
+            if (instruction->execute(who_set, output) == Instruction::quitCode) {
                 break;
             }
 

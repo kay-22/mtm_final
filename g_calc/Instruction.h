@@ -1,6 +1,7 @@
 #ifndef INSTRUCTION_H
 #define INSTRUCTION_H
 
+#include <ostream>
 #include <string>
 #include <vector>
 #include <map>
@@ -22,7 +23,7 @@ namespace graph
     public:
         Instruction(std::vector<std::string> data) : data(data) {}
         enum code{quitCode, okCode};
-        virtual code execute(std::set<Graph>& who_set) = 0;
+        virtual code execute(std::set<Graph>& who_set, std::ostream& out) = 0;
         virtual ~Instruction() = default;
         
         enum keyword {PRINT, DELETE, RESET, QUIT, SAVE, LOAD};
@@ -34,7 +35,7 @@ namespace graph
     {
     public:
         Declaration(std::vector<std::string> data) : Instruction(data) {}
-        virtual code execute(std::set<Graph>& who_set) override;
+        virtual code execute(std::set<Graph>& who_set, std::ostream& out) override;
         virtual ~Declaration() = default;
 
         static const char DECLARATION_CHAR;
@@ -44,7 +45,7 @@ namespace graph
     {
     public:
         Delete(std::vector<std::string> data) : Instruction(data) {}
-        virtual code execute(std::set<Graph>& who_set) override;
+        virtual code execute(std::set<Graph>& who_set, std::ostream& out) override;
         virtual ~Delete() = default;
     };
 
@@ -52,7 +53,7 @@ namespace graph
     {
     public:
         Reset(std::vector<std::string> data) : Instruction(data) {}
-        virtual code execute(std::set<Graph>& who_set) override;
+        virtual code execute(std::set<Graph>& who_set, std::ostream& out) override;
         virtual ~Reset() = default;
     };
 
@@ -60,7 +61,7 @@ namespace graph
     {
     public:
         Quit(std::vector<std::string> data) : Instruction(data) {}
-        virtual code execute(std::set<Graph>& who_set) override;
+        virtual code execute(std::set<Graph>& who_set, std::ostream& out) override;
         virtual ~Quit() = default;
     };
 
@@ -68,7 +69,7 @@ namespace graph
     {
     public:
         Print(std::vector<std::string> data) : Instruction(data) {}
-        virtual code execute(std::set<Graph>& who_set) override;
+        virtual code execute(std::set<Graph>& who_set, std::ostream& out) override;
         virtual ~Print() = default;
     };
 
@@ -76,7 +77,7 @@ namespace graph
     {
     public:
         Save(std::vector<std::string> data) : Instruction(data) {}
-        virtual code execute(std::set<Graph>& who_set) override;
+        virtual code execute(std::set<Graph>& who_set, std::ostream& out) override;
         virtual ~Save() = default;
     };
       
@@ -84,7 +85,7 @@ namespace graph
     {
     public:
         Load(std::vector<std::string> data) : Instruction(data) {}
-        virtual code execute(std::set<Graph>& who_set) override;
+        virtual code execute(std::set<Graph>& who_set, std::ostream& out) override;
         virtual ~Load() = default;
     };
 
@@ -92,66 +93,9 @@ namespace graph
     {
     public:
         Empty() : Instruction(std::vector<std::string>()) {}
-        virtual code execute(std::set<Graph>& who_set) override;
+        virtual code execute(std::set<Graph>& who_set, std::ostream& out) override;
         virtual ~Empty() = default;
     };
-    // class Command : public Instruction
-    // {
-    // protected:
-    //     std::string keyword;
-    // public:
-    //     Command(const std::string& keyword) : keyword(keyword) {}
-    
-    // };
-
-    // class Delete : public Command
-    // {
-    //     Graph target;
-    // public:
-    //     Delete(std::set<Graph>& who_set, const Graph& target) 
-    //     : Command(std::string("delete")) , target(target) {}
-        
-    //     virtual code execute() override;
-    // };
-
-    // class Reset : public Command
-    // {
-    // public:
-    //     Reset(std::set<Graph>& who_set) : Command(std::string("reset")) {}
-    //     virtual code execute() override;
-    // };    
-    
-    // class Quit : public Command
-    // {
-    // public:
-    //     Quit() : Command(std::string("quit")) {}
-    //     virtual code execute() override;
-    // };
-
-    // class Print : public Command
-    // {
-    // private:
-    //     std::string expression;
-    // public:
-    //     Print(const std::string& expression) : Command(std::string("print")), expression(expression) {}
-    //     virtual code execute() override;
-    // };
-
-    // class Save : public Command
-    // {
-    // private:
-    //     Graph target;
-    //     std::string filename;
-    // public:
-    //     Save(const Graph& target, std::string filename) : 
-    //         Command(std::string("save")), target(target), filename(filename) {}
-    //     virtual code execute() override;
-    // };
-
-    // class Declaration : public Instruction
-    // {
-
-    // };
 
 } // namespace graph
 

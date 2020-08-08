@@ -268,7 +268,7 @@ vector<string> Parser::getExpressionData()
     }
 
     if (isValid(isspace)) {
-        throw EmptyExpressionException("please make sure all brackets enclose a valid expression")
+        throw EmptyExpressionException("please make sure all brackets enclose a valid expression");
     }
 
     SpecialCharacters operations_characters(Graph::OperationCharacters::toSpecialChars());
