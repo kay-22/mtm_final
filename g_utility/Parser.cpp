@@ -4,6 +4,8 @@
 using graph::Parser;
 using graph::BracketPattern;
 using graph::Instruction;
+using graph::MatchingSequenceParserException;
+using graph::GraphLiteralParserException;
 using std::string;
 using std::vector;
 using std::pair;
@@ -19,7 +21,7 @@ using std::reverse;
 static bool containsChar(const Parser::SpecialCharacters&, char);
 static bool containsChar(const string::const_iterator& begin, const string::const_iterator& end, char ch);
 static vector<string> split(const string& data, char delimiter = ' ');
-static vector<string> split(const string& data, const BracketPattern& bracket_pattern);
+static vector<string> split(const string& data, BracketPattern bracket_pattern);
 static void trimSideSpaces(string& string);
 
 Parser::Parser(const ifstream& input) : data(), current_word()
@@ -150,6 +152,7 @@ string Parser::onlyChars(const SpecialCharacters& special_characters) const
 
 vector<shared_ptr<Instruction>> Parser::makeInstructions() const
 {
+
     return vector<shared_ptr<Instruction>>();
 }
 
@@ -339,8 +342,7 @@ Parser::GraphLiteralData Parser::decomposeGraphLiteral()
     GraphEdgesData edges_data;
 
     if (!isGraphLiteral()) {
-        //throw
-        //std::cout <<" oh";
+        throw GraphLiteralParserException("'" + current_word + "' is not a valid graph literal.");
     }
 
     string::const_iterator graph_delim_it = find(current_word.begin(), current_word.end(), GRAPH_BRACKET.delimiter);
@@ -406,13 +408,13 @@ vector<string> split(const string& data, char delimiter)
     return data_vector;
 }
 
-vector<string> split(const string& data, const BracketPattern& bracket_pattern)
+vector<string> split(const string& data, BracketPattern bracket_pattern)
 {
     vector<string> data_vector;
-
+    bracket_pattern.delimiter = 0; // ignore delimiter
     Parser current_parser_data(data);
     if(!current_parser_data.isMatchingSequence(bracket_pattern)) {
-        //throw
+        throw MatchingSequenceParserException(string("please check for matching ") + bracket_pattern.left + bracket_pattern.right);
     }
 
     string current_data(data);

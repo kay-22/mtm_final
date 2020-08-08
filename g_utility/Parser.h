@@ -11,6 +11,7 @@
 #include <memory>
 #include <algorithm>
 
+#include <g_except/ParserException.h>
 
 //#include <g_calc/Instruction.h>
 

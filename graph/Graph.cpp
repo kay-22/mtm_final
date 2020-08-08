@@ -14,7 +14,6 @@ using std::string;
 void Graph::addVertex(const Vertex& vertex)
 {
     if (containsVertex(vertex)) {
-        //throw already exists
         throw GraphExsitingElementException("vertex '" + vertex.getName()+"' already exits.");
     }
     data.insert(make_pair(vertex, set<Vertex>()));
@@ -125,7 +124,7 @@ Graph Graph::operator+(const Graph& other_graph) const
         try {
             result.addVertex(other_vertex_data.first);
         }
-        catch (...) {//change to appropriate except
+        catch (const GraphExsitingElementException& e) {
             //ignore existing vertices
         }
     }
@@ -308,23 +307,14 @@ Graph graph::makeGraph(const string& graph_name, const string& graph_literal)
     Parser::GraphEdgesData edges_data = graph_data.second;
 
     for (const string& vertex_datum : vertices_data) {
-        try{
-            const Vertex& vertex(vertex_datum);
-            result.addVertex(vertex);
-        }
-        catch(...) {//update expcept 
-
-        }
+        Vertex vertex(vertex_datum);
+        result.addVertex(vertex);
     }
 
     for (const auto& edge_datum : edges_data) {
-        try {
-            const Vertex& vertex_from = edge_datum.first;
-            const Vertex& vertex_to = edge_datum.second;
-            result.addEdge(makeEdge(vertex_from, vertex_to));
-        }
-        catch (...) {//update except
-        }
+        const Vertex& vertex_from = edge_datum.first;
+        const Vertex& vertex_to = edge_datum.second;
+        result.addEdge(makeEdge(vertex_from, vertex_to));
     }
 
     return result;
