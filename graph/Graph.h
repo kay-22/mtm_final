@@ -12,6 +12,7 @@
 #include "Vertex.h"
 #include <g_utility/GraphName.h>
 #include <g_except/GraphException.h>
+#include <g_utility/Parser.h>
 
 namespace graph
 {
@@ -51,6 +52,17 @@ namespace graph
         Graph operator-(const Graph&) const;
         Graph operator*(const Graph&) const;
         Graph operator!() const;
+
+        struct OperationCharacters 
+        {
+            static const char UNION;
+            static const char INTERSECTION;
+            static const char DIFFERENCE;
+            static const char PRODUCT;
+            static const char COMPLEMENT;
+            
+            static Parser::SpecialCharacters toSpecialChars();
+        };
 
         ~Graph() = default;
     }; 

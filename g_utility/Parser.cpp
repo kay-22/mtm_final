@@ -31,7 +31,6 @@ static bool containsChar(const Parser::SpecialCharacters&, char);
 static bool containsChar(const string::const_iterator& begin, const string::const_iterator& end, char ch);
 static vector<string> split(const string& data, char delimiter = ' ');
 static vector<string> split(const string& data, BracketPattern bracket_pattern);
-static void trimSideSpaces(string& string);
 static shared_ptr<Instruction> makeDeclaration(const string& target_string, string instruction_data);
 static shared_ptr<Instruction> makeCommand(const string& command_string, string instruction_data);
 static vector<string> makeCommandData(const string& command_string, string instruction_data);
@@ -193,7 +192,7 @@ vector<shared_ptr<Instruction>> Parser::makeInstructions()
             result.push_back(make_shared<Empty>());
             break;
         }
-        
+
         for(char ch : instruction_string) {
             if (isspace(ch)) {
                 break;
@@ -212,6 +211,117 @@ vector<shared_ptr<Instruction>> Parser::makeInstructions()
         }
     }
     return vector<shared_ptr<Instruction>>();
+}
+
+bool Parser::isEnclosedExpression() const
+{
+    
+    if (current_word.empty()) {
+        return false;
+    }
+
+    string::const_iterator right_it;
+    string::const_iterator left_it = findFirstPair(Instruction::EXPRESSION_BRACKET, right_it);
+
+    return  left_it == current_word.begin() && 
+            right_it == current_word.end();
+}
+
+bool Parser::isExpressionExists() const
+{
+    if (current_word.empty()) {
+        return false;
+    }
+
+    string::const_iterator right_it;
+    string::const_iterator left_it = findFirstPair(Instruction::EXPRESSION_BRACKET, right_it);
+
+    return  left_it != current_word.end();
+}
+
+void Parser::openExpression() 
+{
+    if (!isEnclosedExpression()) {
+        //throw expression not properly enclosed with ()
+    }
+
+    current_word = string(current_word.begin()+1, current_word.end()-1);
+    Parser::trimSideSpaces(current_word); //maybe make this function not static
+}
+
+vector<string> Parser::getExpressionData()
+{
+    vector<string> result;
+    if(!isMatchingSequence(Instruction::EXPRESSION_BRACKET)) {
+        //throw expression missing ()
+    }
+    
+    if (isEnclosedExpression()) {
+        openExpression();
+    }
+
+    if (isValid(isspace)) {
+        //thrwo empty expression
+    }
+
+    SpecialCharacters operations_characters(Graph::OperationCharacters::toSpecialChars());
+    string temp_word;
+    string delimiter;
+    char current_ch = 0;
+
+    while (!current_word.empty()) {
+        current_ch = current_word.front();
+        if (containsChar(operations_characters, current_ch)) {
+            if (!temp_word.empty()) {
+                trimSideSpaces(temp_word);
+                result.push_back(temp_word);
+            }
+            delimiter.push_back(current_ch);
+            result.push_back(delimiter);
+            delimiter.pop_back();
+            temp_word = "";
+        }
+        else if (current_ch == Instruction::EXPRESSION_BRACKET.left) {
+            getExpressionDataAux(temp_word, result, Instruction::EXPRESSION_BRACKET);
+            continue;
+        }
+        else if (current_ch == GRAPH_BRACKET.left) {
+                if (!isMatchingSequence(GRAPH_BRACKET)) {
+                    //trhow missing }
+                }   
+            getExpressionDataAux(temp_word, result, GRAPH_BRACKET);
+            continue;
+        }
+        temp_word += current_ch;
+    }
+
+    if (!temp_word.empty()) {
+        result.push_back(temp_word);
+    }
+
+    return result;
+}
+
+void Parser::getExpressionDataAux(string& temp_word, vector<string>& result, const BracketPattern& bracket_pattern) 
+{
+
+    if (!temp_word.empty()) {
+        trimSideSpaces(temp_word);
+        result.push_back(temp_word);
+    }
+    temp_word = popFirstPair(bracket_pattern);
+    result.push_back(temp_word);
+    temp_word = "";
+}
+string Parser::popFirstPair(const BracketPattern& BracketPattern)
+{
+    string::const_iterator right_it;
+    string::const_iterator left_it = findFirstPair(GRAPH_BRACKET, right_it);
+    
+    string result(left_it, right_it);
+    current_word.erase(left_it,right_it);
+
+    return result;
 }
 
 bool Parser::operator<(const Parser& other) const
@@ -328,7 +438,7 @@ bool Parser::isGraphLiteral() const
     temp_parser.current_word.erase(new_end, temp_parser.current_word.end());
     //at least one edge
     int edge_counter = 0;
-    while (containsChar(temp_parser.current_word.begin(), temp_parser.current_word.end(), EDGE_BRACKET.right)) {
+    while (containsChar(temp_parser.current_word.begin(), temp_parser.current_word.end(), EDGE_BRACKET.right)) { //maybe change to !=stringnpos
         left_it = temp_parser.findFirstPair(edge_bracket, right_it);
         temp_parser.current_word.erase(left_it, right_it);
         edge_counter++;
@@ -458,7 +568,7 @@ vector<string> split(const string& data, char delimiter)
     istringstream data_input(data);
     for (string datum_string; getline(data_input, datum_string, delimiter);){
         if (!isspace(delimiter)) {
-            trimSideSpaces(datum_string);
+            Parser::trimSideSpaces(datum_string);
         }
         data_vector.push_back(datum_string);
     }
@@ -492,7 +602,7 @@ vector<string> split(const string& data, BracketPattern bracket_pattern)
     return data_vector;   
 }
 
-void trimSideSpaces(string& string)
+void Parser::trimSideSpaces(string& string)
 {
     size_t count = 0;
     for (char ch : string){
@@ -516,7 +626,7 @@ shared_ptr<Instruction> makeDeclaration(const string& target_string, string inst
 
     if (target_string.size() < instruction_data.size()){
         instruction_data.erase(target_string.size());
-        trimSideSpaces(instruction_data);
+        Parser::trimSideSpaces(instruction_data);
 
         if(instruction_data.front() !=  Declaration::DECLARATION_CHAR) {
             declaration_data.push_back("");
@@ -578,6 +688,8 @@ vector<string> makeCommandData(const string& command_string, string instruction_
     result.push_back(command_string);
     if (command_string.size() < instruction_data.size()){
         instruction_data.erase(command_string.size());
+        Parser::trimSideSpaces(instruction_data);
+        
         result.push_back(instruction_data);
     }
     else {

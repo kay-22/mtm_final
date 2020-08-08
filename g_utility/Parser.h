@@ -25,6 +25,7 @@ namespace graph
     private:
         std::vector<std::string> data;
         std::string current_word;
+        void getExpressionDataAux(std::string&, std::vector<std::string>&, const BracketPattern&);
     public:
         typedef std::unordered_set<char> SpecialCharacters;
         static const SpecialCharacters NO_ADDITIONAL;
@@ -64,6 +65,7 @@ namespace graph
             const BracketPattern& bracket_pattern, 
             std::string::const_iterator& right_it) const;
 
+        std::string popFirstPair(const BracketPattern& BracketPattern);
         /**
          * Checks if the current_word is valid under certian criteria.
          * @param isValidChar a bool function whith a char argument that will check each charater in the current_word. 
@@ -108,9 +110,20 @@ namespace graph
         GraphLiteralData decomposeGraphLiteral();
 
         std::vector<std::shared_ptr<Instruction>> makeInstructions();
+        
+        
+        //check if the calculator expression is  ('expression') without additional expressions
+        bool isEnclosedExpression() const;
+        //checks if there is at least one ('expression'). doesn't have to be enclosed.
+        bool isExpressionExists() const;
+        //removes outer brackets from expression
+        void openExpression();
+        std::vector<std::string> getExpressionData();
 
         std::string onlyChars(const SpecialCharacters&) const;
         const std::string& getCurrentWord() const;
+
+        static void trimSideSpaces(std::string& string);
         
         // advance current word to the next one in the data
         void next();

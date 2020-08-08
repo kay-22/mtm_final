@@ -3,6 +3,7 @@
 using graph::Graph;
 using graph::Vertex;
 using graph::Edge;
+using graph::Parser;
 using std::map;
 using std::set;
 using std::make_pair;
@@ -10,6 +11,18 @@ using std::swap;
 //using std::vector;
 //using std::generate;
 using std::string;
+
+const char Graph::OperationCharacters::UNION = '+';
+const char Graph::OperationCharacters::INTERSECTION = '^';
+const char Graph::OperationCharacters::DIFFERENCE = '-';
+const char Graph::OperationCharacters::PRODUCT = '*';
+const char Graph::OperationCharacters::COMPLEMENT ='!';
+
+Parser::SpecialCharacters Graph::OperationCharacters::toSpecialChars()
+{
+    return Parser::SpecialCharacters({UNION, INTERSECTION, DIFFERENCE, PRODUCT, COMPLEMENT});
+}
+
 
 void Graph::addVertex(const Vertex& vertex)
 {

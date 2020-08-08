@@ -15,6 +15,10 @@ namespace graph
     {
     protected:
         std::vector<std::string> data;
+        
+        //Graph evaluateExpression(const string& expression, const std::set<Graph>& who_set);
+        //Graph evaluateSimpleExpression(const string& expression, const std::set<Graph>& who_set);
+        
     public:
         Instruction(std::vector<std::string> data) : data(data) {}
         enum code{quitCode, okCode};
@@ -23,6 +27,7 @@ namespace graph
         
         enum keyword {PRINT, DELETE, RESET, QUIT, SAVE, LOAD};
         static const std::map<keyword, std::string> KEYWORDS;
+        static const BracketPattern EXPRESSION_BRACKET;
     };
 
     class Declaration : public Instruction
