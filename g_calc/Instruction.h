@@ -8,6 +8,7 @@
 #include <set>
 
 #include <graph/Graph.h>
+#include <g_except/InstructionException.h>
 
 namespace graph
 {
@@ -38,7 +39,7 @@ namespace graph
         virtual code execute(std::set<Graph>& who_set, std::ostream& out) override;
         virtual ~Declaration() = default;
 
-        static const char DECLARATION_CHAR = '=';;
+        static const char DECLARATION_CHAR = '=';
     };
 
     class Delete : public Instruction

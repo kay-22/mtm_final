@@ -19,6 +19,9 @@ using graph::BracketPattern;
 using graph::Parser;
 using graph::Graph;
 using graph::makeGraph;
+using graph::BadCommandExpression;
+using graph::UndefinedVariableException;
+using graph::OperatorExceptoin;
 
 const BracketPattern Instruction::EXPRESSION_BRACKET('(',')');
 const map<Instruction::keyword, string> Instruction::KEYWORDS = {
@@ -37,9 +40,9 @@ static Graph evaluateExpression(const string& expression, const std::set<Graph>&
 
 Instruction::code Declaration::execute(set<Graph>& who_set, ostream& out)  
 {
-    Graph rvalue_graph(data.at(0));
+    Graph rvalue_graph(data.at(0));// make constatns for placeholders
     if (data.at(1).empty()) {
-        //throw expected '='
+        throw BadCommandExpression(string("did you mean ") + data.at(0) + DECLARATION_CHAR + data.at(2) + string("?"));
     }
     
     const Graph& lvalue_graph = evaluateExpression(data.at(2), who_set);
@@ -75,7 +78,7 @@ Instruction::code Delete::execute(set<Graph>& who_set, ostream& out)
     Graph graph(parser.getCurrentWord());
 
     if (who_set.find(graph) == who_set.end()) {
-        //throw bad variable name
+        throw UndefinedVariableException("'" + parser.getCurrentWord() + "'");
     }
     who_set.erase(graph);
 
@@ -84,7 +87,7 @@ Instruction::code Delete::execute(set<Graph>& who_set, ostream& out)
 Instruction::code Reset::execute(set<Graph>& who_set, ostream& out) 
 {
     if (!data.back().empty()) {
-        //throw found stuff after reset
+        throw BadCommandExpression("'reset' does not take any arguments");
     }
     who_set.clear();
     return okCode;
@@ -92,7 +95,7 @@ Instruction::code Reset::execute(set<Graph>& who_set, ostream& out)
 Instruction::code Quit::execute(set<Graph>& who_set, ostream& out)
 {
     if (!data.back().empty()) {
-        //throw found stuff after quit
+        throw BadCommandExpression("'quit' does not take any arguments");
     }
     return quitCode;
 }
@@ -120,12 +123,12 @@ Graph evaluateExpression(const string& expression, const set<Graph>& who_set)
             return makeGraph(expression); //graph literal
         }
         else if (parser.isGraphOperator()) {
-            //throw operator at the end
+            throw OperatorExceptoin("operator " + parser.getCurrentWord() + " expected variable");
         }
 
         Graph graph(expression);
         if (who_set.find(graph) == who_set.end()) {
-            //throw variable does not exist
+            throw UndefinedVariableException("'" + expression + "'");
         }
         
         return graph;
@@ -141,7 +144,7 @@ Graph evaluateExpression(const string& expression, const set<Graph>& who_set)
     }
 
     if (expression_data.empty()) {
-        //throw epression only !!! operators
+        throw OperatorExceptoin("operator '!' expected variable");
     }
 
     
@@ -156,7 +159,7 @@ Graph evaluateExpression(const string& expression, const set<Graph>& who_set)
     }
 
     if (expression_data.size() == 1) {
-        //throw expexted binary operator
+        throw OperatorExceptoin("expected binary operator");
     }
 
     char Operator = expression_data.front().front();
@@ -183,7 +186,7 @@ Graph evaluateExpression(const string& expression, const set<Graph>& who_set)
             break;
         
         default:
-            //throw missing operaot
+            throw OperatorExceptoin("expected binary operator");
             break;
     }
 
