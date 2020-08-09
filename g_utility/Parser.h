@@ -7,7 +7,8 @@
 #include <vector>
 #include <list>
 #include <unordered_set>
-#include <fstream>
+//#include <fstream>
+#include <istream>
 #include <sstream>
 #include <memory>
 #include <algorithm>
@@ -37,7 +38,7 @@ namespace graph
         static const char OBJECT_DELIMITER;
 
         Parser(const std::string &current_word = std::string("")) : current_word(current_word) {}
-        Parser(std::ifstream& data_stram);
+        Parser(std::istream& data_stram);
 
         /**
          * Finds the first mathcing pairs in the parser's current_word.

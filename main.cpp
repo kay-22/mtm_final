@@ -1,39 +1,31 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 
-#include <g_utility.h>
+// #include <g_utility.h>
 #include <g_test.h>
-#include <g_except.h>
+// #include <g_except.h>
+#include "g_calc/GraphCalculator.h"
 
 using std::string;
 using std::cout;
 using std::endl;
+using std::cerr;
+using std::ifstream;
+using std::ofstream;
 using graph::Graph;
 using graph::makeGraph;
 using graph::VertexName;
 using graph::Exception;
+using graph::GraphCalculator;
 
-#include <functional>
-using std::reference_wrapper;
+static const int BATCH_MODE = 3;
+static const int INTERACTIVE_MODE = 1;
+static const int IN_FILE = 2;
+static const int OUT_FILE = 1;
 
-class A
+void foomain()
 {
-public:
-    virtual void hi() = 0;
-    virtual ~A() = default;
-};
-
-class B : public A 
-{
-    virtual void hi() override { cout << "hiB" << endl;}
-};
-
-class C : public A 
-{
-    virtual void hi() override { cout << "hiC" << endl;}
-};
-
-int main(int, char**) {
     GraphTest::run_all_tests();
 
     VertexName vn1("abc");
@@ -78,4 +70,41 @@ int main(int, char**) {
     Graph ohohoh = makeGraph(ohoh_l, "ggg");
     cout << ohohoh << endl;
 
+}
+
+int main(int argc, char** argv) {
+    //foomain();
+    GraphCalculator gcalc;
+
+    try{
+        if (argc == BATCH_MODE){
+            ifstream input(argv[IN_FILE]);
+            if (!input) {
+                cerr << "Error fatal error occured -- could not open input file" << endl;
+                return 1;
+            }
+
+            ofstream output(argv[OUT_FILE]);
+            if (!output) {
+                cerr << "Error fatal error occured -- could not open output file" << endl;
+                return 1;
+            }
+
+            gcalc.runBatch(input, output);
+
+        }
+        
+        else if (argc == INTERACTIVE_MODE) {
+            gcalc.run();
+        }
+        else {
+            cerr << "Error: fatal error occured -- incorrect number of arguments" << endl;
+            return 1;
+        }
+    }
+    catch (...) {
+        return 1;
+    }
+
+    return 0;
 }

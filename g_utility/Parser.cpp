@@ -24,7 +24,7 @@ using std::shared_ptr;
 using std::make_shared;
 using std::function;
 using std::find;
-using std::ifstream;
+using std::istream;
 using std::istringstream;
 using std::getline;
 using std::reverse;
@@ -37,7 +37,7 @@ static shared_ptr<Instruction> makeDeclaration(const string& target_string, stri
 static shared_ptr<Instruction> makeCommand(const string& command_string, string instruction_data);
 static vector<string> makeCommandData(const string& command_string, string instruction_data);
 
-Parser::Parser(ifstream& input) : data(), current_word()
+Parser::Parser(istream& input) : data(), current_word()
 {
     for (string line; getline(input, line);) {
         const string& cref_line = line;

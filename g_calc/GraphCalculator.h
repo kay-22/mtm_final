@@ -3,10 +3,18 @@
 
 #include <set>
 #include <fstream>
+#include <iostream>
 #include <memory>
 
 #include <graph/Graph.h>
+#include <exception>
 #include <g_utility/Parser.h>
+#include <g_except/Exception.h>
+#include <g_except/GraphException.h>
+#include <g_except/InstructionException.h>
+#include <g_except/NameException.h>
+#include <g_except/ParserException.h>
+
 #include "Instruction.h"
 
 namespace graph
