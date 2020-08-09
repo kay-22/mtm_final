@@ -69,13 +69,13 @@ int main(int, char**) {
     VertexName vn6(string("[a;][;][a;;b;c][[];][]"));
     VertexName vn7(string("[a;;b;c][]"));
 
-    Graph ohoh = makeGraph("gg", "{a,b | <a,b>, <b, a>}");
+    Graph ohoh = makeGraph("{a,b | <a,b>, <b, a>}", "gg");
     cout << ohoh << endl;
 
     string ohoh_l = ohoh.makeLiteral();
     cout << ohoh_l << endl;
     
-    Graph ohohoh = makeGraph("ggg", ohoh_l);
+    Graph ohohoh = makeGraph(ohoh_l, "ggg");
     cout << ohohoh << endl;
 
 }

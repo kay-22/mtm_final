@@ -5,6 +5,7 @@
 #include <cctype>
 #include <functional>
 #include <vector>
+#include <list>
 #include <unordered_set>
 #include <fstream>
 #include <sstream>
@@ -26,7 +27,7 @@ namespace graph
     private:
         std::vector<std::string> data;
         std::string current_word;
-        void getExpressionDataAux(std::string&, std::vector<std::string>&, const BracketPattern&);
+        void getExpressionDataAux(std::string&, std::list<std::string>&, const BracketPattern&);
     public:
         typedef std::unordered_set<char> SpecialCharacters;
         static const SpecialCharacters NO_ADDITIONAL;
@@ -104,6 +105,8 @@ namespace graph
 
         //checks if the current word has a pattern of {,,|<,>,,} doesn't check the names
         bool isGraphLiteral() const;
+        // checks if +^*-!
+        bool isGraphOperator() const;
         //typedef std::pair<std::vector<std::string>, std::vector<std::pair<std::string, std::string>>> GraphLiteralData; //good lord in heavens
         typedef std::vector<std::string> GraphVerticesData;
         typedef std::vector<std::pair<std::string, std::string>> GraphEdgesData;
@@ -119,7 +122,7 @@ namespace graph
         bool isExpressionExists() const;
         //removes outer brackets from expression
         void openExpression();
-        std::vector<std::string> getExpressionData();
+        std::list<std::string> getExpressionData();
 
         std::string onlyChars(const SpecialCharacters&) const;
         const std::string& getCurrentWord() const;

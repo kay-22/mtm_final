@@ -12,11 +12,11 @@ using std::swap;
 //using std::generate;
 using std::string;
 
-const char Graph::OperationCharacters::UNION = '+';
-const char Graph::OperationCharacters::INTERSECTION = '^';
-const char Graph::OperationCharacters::DIFFERENCE = '-';
-const char Graph::OperationCharacters::PRODUCT = '*';
-const char Graph::OperationCharacters::COMPLEMENT ='!';
+// const char Graph::OperationCharacters::UNION = '+';
+// const char Graph::OperationCharacters::INTERSECTION = '^';
+// const char Graph::OperationCharacters::DIFFERENCE = '-';
+// const char Graph::OperationCharacters::PRODUCT = '*';
+// const char Graph::OperationCharacters::COMPLEMENT ='!';
 
 Parser::SpecialCharacters Graph::OperationCharacters::toSpecialChars()
 {
@@ -310,7 +310,7 @@ std::ostream& operator<<(std::ostream& os, const Graph& graph)
     return os;
 }
 
-Graph graph::makeGraph(const string& graph_name, const string& graph_literal)
+Graph graph::makeGraph(const string& graph_literal, const string& graph_name)
 {
     Graph result(graph_name);
     Parser parser(graph_literal);

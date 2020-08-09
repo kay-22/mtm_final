@@ -17,6 +17,7 @@ using graph::GraphLiteralParserException;
 using graph::EmptyExpressionException;
 using std::string;
 using std::vector;
+using std::list;
 using std::pair;
 using std::make_pair;
 using std::shared_ptr;
@@ -195,7 +196,9 @@ vector<shared_ptr<Instruction>> Parser::makeInstructions()
         }
 
         for(char ch : instruction_string) {
-            if (isspace(ch)) {
+            if (isspace(ch) || 
+                ch == Declaration::DECLARATION_CHAR || 
+                ch == Instruction::EXPRESSION_BRACKET.left) {
                 break;
             }
             current_word += ch;
@@ -253,9 +256,11 @@ void Parser::openExpression()
     Parser::trimSideSpaces(current_word); //maybe make this function not static
 }
 
-vector<string> Parser::getExpressionData()
+list<string> Parser::getExpressionData()
 {
-    vector<string> result;
+    if (current_word.empty()) {
+        throw EmptyExpressionException("please enter a valid expression");
+    }
     if(!isMatchingSequence(Instruction::EXPRESSION_BRACKET)) {
         throw MatchingSequenceParserException(string("please check for matching ") + 
                                               Instruction::EXPRESSION_BRACKET.left + 
@@ -274,6 +279,7 @@ vector<string> Parser::getExpressionData()
     SpecialCharacters operations_characters(Graph::OperationCharacters::toSpecialChars());
     string temp_word;
     string delimiter;
+    list<string> result;
     char current_ch = 0;
 
     while (!current_word.empty()) {
@@ -311,7 +317,7 @@ vector<string> Parser::getExpressionData()
     return result;
 }
 
-void Parser::getExpressionDataAux(string& temp_word, vector<string>& result, const BracketPattern& bracket_pattern) 
+void Parser::getExpressionDataAux(string& temp_word, list<string>& result, const BracketPattern& bracket_pattern) 
 {
 
     if (!temp_word.empty()) {
@@ -513,6 +519,16 @@ bool Parser::isGraphLiteral() const
 return true;
 }
 
+bool Parser::isGraphOperator() const
+{
+    if (current_word.size() != 1)
+    {
+        return false;
+    }
+
+    return containsChar(Graph::OperationCharacters::toSpecialChars(), current_word.back());
+}
+
 Parser::GraphLiteralData Parser::decomposeGraphLiteral()
 {
     GraphVerticesData vertices_data;
@@ -634,23 +650,28 @@ shared_ptr<Instruction> makeDeclaration(const string& target_string, string inst
     declaration_data.push_back(target_string);
 
     if (target_string.size() < instruction_data.size()){
-        instruction_data.erase(target_string.size());
+        instruction_data.erase(0, target_string.size());
         Parser::trimSideSpaces(instruction_data);
 
-        if(instruction_data.front() !=  Declaration::DECLARATION_CHAR) {
+        if(instruction_data.empty() || instruction_data.front() !=  Declaration::DECLARATION_CHAR) {
+            declaration_data.push_back("");
             declaration_data.push_back("");
         }
         else {
+            declaration_data.push_back(string("") + Declaration::DECLARATION_CHAR);
+            
+            instruction_data.erase(0, 1);
+            Parser::trimSideSpaces(instruction_data);
+
             declaration_data.push_back(instruction_data);
         }
     }
     else {
         declaration_data.push_back("");
+        declaration_data.push_back("");
     }
-    
-    shared_ptr<Instruction> declaration = make_shared<Declaration>(declaration_data);
 
-    return declaration;
+    return make_shared<Declaration>(declaration_data);
 }
 
 shared_ptr<Instruction> makeCommand(const string& command_string, string instruction_data)
@@ -696,7 +717,7 @@ vector<string> makeCommandData(const string& command_string, string instruction_
     
     result.push_back(command_string);
     if (command_string.size() < instruction_data.size()){
-        instruction_data.erase(command_string.size());
+        instruction_data.erase(0, command_string.size());
         Parser::trimSideSpaces(instruction_data);
         
         result.push_back(instruction_data);

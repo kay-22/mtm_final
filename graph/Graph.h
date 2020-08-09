@@ -55,11 +55,11 @@ namespace graph
 
         struct OperationCharacters 
         {
-            static const char UNION;
-            static const char INTERSECTION;
-            static const char DIFFERENCE;
-            static const char PRODUCT;
-            static const char COMPLEMENT;
+            static const char UNION = '+';
+            static const char INTERSECTION = '^';
+            static const char DIFFERENCE = '-';
+            static const char PRODUCT = '*';
+            static const char COMPLEMENT ='!';
             
             static Parser::SpecialCharacters toSpecialChars();
         };
@@ -68,7 +68,7 @@ namespace graph
     }; 
 
     //makes a graph from a literal graph strign and throws appropriate exceptions
-    Graph makeGraph(const std::string& graph_name, const std::string& graph_literal);
+    Graph makeGraph(const std::string& graph_literal, const std::string& graph_name = "unnamed");
     Edge makeEdge(const Vertex&, const Vertex&);
 } // namespace graph
 

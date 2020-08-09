@@ -2,7 +2,7 @@
 
 using std::map;
 using std::set;
-using std::vector;
+using std::list;
 using std::string;
 using std::ostream;
 using std::endl;
@@ -18,8 +18,8 @@ using graph::Empty;
 using graph::BracketPattern;
 using graph::Parser;
 using graph::Graph;
+using graph::makeGraph;
 
-const char Declaration::DECLARATION_CHAR = '=';
 const BracketPattern Instruction::EXPRESSION_BRACKET('(',')');
 const map<Instruction::keyword, string> Instruction::KEYWORDS = {
                                                                     {PRINT, "print"}, 
@@ -35,12 +35,32 @@ const map<Instruction::keyword, string> Instruction::KEYWORDS = {
 //static bool isEnclosedExpression(const string& expression);
 static Graph evaluateExpression(const string& expression, const std::set<Graph>& who_set);
 
-Instruction::code Declaration::execute(set<Graph>& who_set, ostream& out)  {return okCode;}
+Instruction::code Declaration::execute(set<Graph>& who_set, ostream& out)  
+{
+    Graph rvalue_graph(data.at(0));
+    if (data.at(1).empty()) {
+        //throw expected '='
+    }
+    
+    const Graph& lvalue_graph = evaluateExpression(data.at(2), who_set);
+
+    if (who_set.find(rvalue_graph) != who_set.end()) {
+        who_set.erase(rvalue_graph);
+    } 
+    who_set.insert(lvalue_graph);
+
+    return okCode;
+}
+
 Instruction::code Print::execute(set<Graph>& who_set, ostream& out)
 {
     Parser parser(data.back());
     parser.openExpression();
 
+    // if (parser.getCurrentWord().empty()){ //openExpression should throw if empty
+    //     throw 
+    // }
+    
     const Graph& graph = evaluateExpression(parser.getCurrentWord(), who_set);
 
     out << graph << endl;
@@ -87,9 +107,94 @@ Instruction::code Empty::execute(set<Graph>& who_set, ostream& out)
 Graph evaluateExpression(const string& expression, const set<Graph>& who_set)
 {
     Parser parser(expression);
-    vector<string> expression_data = parser.getExpressionData();
+    list<string> expression_data = parser.getExpressionData(); //change to queue<strint>
+    Graph result_graph;    
 
-    return Graph();
+    if (expression_data.size() == 1) {
+
+        if (expression_data.front().front() == Instruction::EXPRESSION_BRACKET.left) {
+            return evaluateExpression(expression, who_set); // open parentheses 
+        }
+
+        if (expression_data.front().front() == Parser::GRAPH_BRACKET.left) {
+            return makeGraph(expression); //graph literal
+        }
+        else if (parser.isGraphOperator()) {
+            //throw operator at the end
+        }
+
+        Graph graph(expression);
+        if (who_set.find(graph) == who_set.end()) {
+            //throw variable does not exist
+        }
+        
+        return graph;
+    }
+
+
+    int complement_counter;
+    string complemet_op;
+    complemet_op.push_back(Graph::OperationCharacters::COMPLEMENT);
+    while (!expression_data.empty() && expression_data.front() == complemet_op) {
+        expression_data.pop_front();
+        complement_counter++;
+    }
+
+    if (expression_data.empty()) {
+        //throw epression only !!! operators
+    }
+
+    
+    Graph current_graph = evaluateExpression(expression_data.front(), who_set);
+    expression_data.pop_front();
+    
+    //make operators += != and so
+    result_graph = (complement_counter%2)? current_graph : !current_graph;
+
+    if (expression_data.empty()) {
+        return result_graph;
+    }
+
+    if (expression_data.size() == 1) {
+        //throw expexted binary operator
+    }
+
+    char Operator = expression_data.front().front();
+    //check isoperator? or just rely on swith
+    expression_data.pop_front();
+    current_graph = evaluateExpression(expression_data.front(), who_set);
+
+    switch (Operator)
+    {
+        case Graph::OperationCharacters::UNION:
+            result_graph = result_graph + current_graph; //+=
+            break;
+        
+        case Graph::OperationCharacters::INTERSECTION:
+            result_graph = result_graph ^ current_graph; //+=
+            break;
+        
+        case Graph::OperationCharacters::PRODUCT:
+            result_graph = result_graph * current_graph; //+=
+            break;
+        
+        case Graph::OperationCharacters::DIFFERENCE:
+            result_graph = result_graph + current_graph; //+=
+            break;
+        
+        default:
+            //throw missing operaot
+            break;
+    }
+
+    string next_expression(result_graph.makeLiteral());
+    
+    while (!expression_data.empty()) {
+        next_expression += expression_data.front();
+        expression_data.pop_front();
+    }
+
+    return evaluateExpression(next_expression, who_set);
 }
 
 // Graph Instruction::evaluateSimpleExpression(const string& expression, const set<Graph>& who_set) 
