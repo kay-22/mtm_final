@@ -21,8 +21,8 @@ using graph::GraphCalculator;
 
 static const int BATCH_MODE = 3;
 static const int INTERACTIVE_MODE = 1;
-static const int IN_FILE = 2;
-static const int OUT_FILE = 1;
+static const int IN_FILE = 1;
+static const int OUT_FILE = 2;
 
 void foomain()
 {
@@ -73,18 +73,21 @@ void foomain()
 }
 
 int main(int argc, char** argv) {
-    foomain();
+    //foomain();
     GraphCalculator gcalc;
-
+    
     try{
         if (argc == BATCH_MODE){
+        //if(true){
             ifstream input(argv[IN_FILE]);
+            //ifstream input("g_test\\2.2&2.5\\batch\\t1in.txt");
             if (!input) {
-                cerr << "Error fatal error occured -- could not open input file" << endl;
+                cerr << "Error: fatal error occured -- could not open input file" << endl;
                 return 1;
             }
 
             ofstream output(argv[OUT_FILE]);
+            //ofstream output("out.txt");
             if (!output) {
                 cerr << "Error fatal error occured -- could not open output file" << endl;
                 return 1;

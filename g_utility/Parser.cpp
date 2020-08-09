@@ -195,7 +195,6 @@ string Parser::onlyChars(const SpecialCharacters& special_characters) const
 
 vector<shared_ptr<Instruction>> Parser::makeInstructions()
 {
-    current_word = "";
     vector<shared_ptr<Instruction>> result;
     vector<string> instruction_data;
     if (data.empty()) {
@@ -204,6 +203,7 @@ vector<shared_ptr<Instruction>> Parser::makeInstructions()
     }
     
     for (string instruction_string : data) {
+        current_word = "";
         trimSideSpaces(instruction_string);
 
         if (instruction_string.empty()) {
