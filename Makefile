@@ -67,7 +67,7 @@ Instruction.o: g_calc/Instruction.cpp g_calc/Instruction.h graph/Graph.h \
  g_except/NameException.h g_except/Exception.h g_utility/Parser.h \
  g_except/ParserException.h g_except/InstructionException.h \
  g_utility/GraphName.h g_except/GraphException.h g_utility/Parser.h
- 	${CXX} ${INC} -c ${DEBUG} ${COMP} ${RELEASE} g_calc/Instruction.cpp
+	${CXX} ${INC} -c ${DEBUG} ${COMP} ${RELEASE} g_calc/Instruction.cpp
 
 Exception.o: g_except/Exception.cpp g_except/Exception.h
 	${CXX} ${INC} -c ${DEBUG} ${COMP} ${RELEASE} g_except/Exception.cpp
