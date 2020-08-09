@@ -21,7 +21,7 @@ void GraphCalculator::run()
 {
     
     Instruction::code instruction_code = Instruction::code::okCode;
-    while (instruction_code != Instruction::code::quitCode) {
+    while (instruction_code != Instruction::code::quitCode && !cin.eof()) {
         cout << PROMPT;
         Parser parser(cin, true);
         shared_ptr<Instruction> instruction = parser.makeInstructions().back(); //cin should only make one instruction at aTIME
