@@ -2,10 +2,7 @@
 #include <fstream>
 #include <string>
 
-// #include <g_utility.h>
-//#include <g_test.h>
-// #include <g_except.h>
-#include "g_calc/GraphCalculator.h"
+#include <g_calc/GraphCalculator.h>
 
 using std::string;
 using std::cout;
@@ -70,7 +67,7 @@ static const int OUT_FILE = 2;
 //     Graph ohohoh = makeGraph(ohoh_l, "ggg");
 //     cout << ohohoh << endl;
 
-}
+//}
 
 int main(int argc, char** argv) {
     //foomain();
