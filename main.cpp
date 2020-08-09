@@ -73,7 +73,7 @@ void foomain()
 }
 
 int main(int argc, char** argv) {
-    //foomain();
+    foomain();
     GraphCalculator gcalc;
 
     try{

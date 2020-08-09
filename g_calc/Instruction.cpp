@@ -2,7 +2,7 @@
 
 using std::map;
 using std::set;
-using std::list;
+using std::queue;
 using std::string;
 using std::ostream;
 using std::endl;
@@ -37,20 +37,21 @@ const map<Instruction::keyword, string> Instruction::KEYWORDS = {
 //static bool isExpressionExists(const string& expression);
 //static bool isEnclosedExpression(const string& expression);
 static Graph evaluateExpression(const string& expression, const std::set<Graph>& who_set);
+static bool handleComplement(queue<string>& expression_data);
 
 Instruction::code Declaration::execute(set<Graph>& who_set, ostream& out)  
 {
-    Graph rvalue_graph(data.at(0));// make constatns for placeholders
+    Graph graph(data.at(0));// make constatns for placeholders
     if (data.at(1).empty()) {
         throw BadCommandExpression(string("did you mean ") + data.at(0) + DECLARATION_CHAR + data.at(2) + string("?"));
     }
     
-    const Graph& lvalue_graph = evaluateExpression(data.at(2), who_set);
+    graph = evaluateExpression(data.at(2), who_set);
 
-    if (who_set.find(rvalue_graph) != who_set.end()) {
-        who_set.erase(rvalue_graph);
+    if (who_set.find(graph) != who_set.end()) {
+        who_set.erase(graph); //finds graph with the same name, but data can be different
     } 
-    who_set.insert(lvalue_graph);
+    who_set.insert(graph);
 
     return okCode;
 }
@@ -110,7 +111,7 @@ Instruction::code Empty::execute(set<Graph>& who_set, ostream& out)
 Graph evaluateExpression(const string& expression, const set<Graph>& who_set)
 {
     Parser parser(expression);
-    list<string> expression_data = parser.getExpressionData(); //change to queue<strint>
+    queue<string> expression_data = parser.getExpressionData(); //change to queue<strint>
     Graph result_graph;    
 
     if (expression_data.size() == 1) {
@@ -127,21 +128,19 @@ Graph evaluateExpression(const string& expression, const set<Graph>& who_set)
         }
 
         Graph graph(expression);
-        if (who_set.find(graph) == who_set.end()) {
+
+        const set<Graph>::iterator& who_it = who_set.find(graph);
+        if (who_it == who_set.end()) {
             throw UndefinedVariableException("'" + expression + "'");
         }
+
+        graph = *who_it;
         
         return graph;
     }
 
-
-    int complement_counter;
-    string complemet_op;
-    complemet_op.push_back(Graph::OperationCharacters::COMPLEMENT);
-    while (!expression_data.empty() && expression_data.front() == complemet_op) {
-        expression_data.pop_front();
-        complement_counter++;
-    }
+    
+    bool is_complement = handleComplement(expression_data);
 
     if (expression_data.empty()) {
         throw OperatorExceptoin("operator '!' expected variable");
@@ -149,10 +148,10 @@ Graph evaluateExpression(const string& expression, const set<Graph>& who_set)
 
     
     Graph current_graph = evaluateExpression(expression_data.front(), who_set);
-    expression_data.pop_front();
+    expression_data.pop();
     
     //make operators += != and so
-    result_graph = (complement_counter%2)? current_graph : !current_graph;
+    result_graph = (is_complement)? current_graph : !current_graph;
 
     if (expression_data.empty()) {
         return result_graph;
@@ -164,8 +163,11 @@ Graph evaluateExpression(const string& expression, const set<Graph>& who_set)
 
     char Operator = expression_data.front().front();
     //check isoperator? or just rely on swith
-    expression_data.pop_front();
+    expression_data.pop();
+    is_complement = handleComplement(expression_data);
+    
     current_graph = evaluateExpression(expression_data.front(), who_set);
+    current_graph = (is_complement)? current_graph : !current_graph;
 
     switch (Operator)
     {
@@ -189,17 +191,30 @@ Graph evaluateExpression(const string& expression, const set<Graph>& who_set)
             throw OperatorExceptoin("expected binary operator");
             break;
     }
+    expression_data.pop();
 
     string next_expression(result_graph.makeLiteral());
     
     while (!expression_data.empty()) {
         next_expression += expression_data.front();
-        expression_data.pop_front();
+        expression_data.pop();
     }
 
     return evaluateExpression(next_expression, who_set);
 }
 
+bool handleComplement(queue<string>& expression_data)
+{
+    int complement_counter;
+    string complemet_op;
+    complemet_op.push_back(Graph::OperationCharacters::COMPLEMENT);
+    while (!expression_data.empty() && expression_data.front() == complemet_op) {
+        expression_data.pop();
+        complement_counter++;
+    }
+
+    return complement_counter%2 == 0;
+}
 // Graph Instruction::evaluateSimpleExpression(const string& expression, const set<Graph>& who_set) 
 // {
 //     if (isalnum(expression.front() )

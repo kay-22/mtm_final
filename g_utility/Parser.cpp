@@ -17,7 +17,7 @@ using graph::GraphLiteralParserException;
 using graph::EmptyExpressionException;
 using std::string;
 using std::vector;
-using std::list;
+using std::queue;
 using std::pair;
 using std::make_pair;
 using std::shared_ptr;
@@ -37,11 +37,16 @@ static shared_ptr<Instruction> makeDeclaration(const string& target_string, stri
 static shared_ptr<Instruction> makeCommand(const string& command_string, string instruction_data);
 static vector<string> makeCommandData(const string& command_string, string instruction_data);
 
-Parser::Parser(istream& input) : data(), current_word()
+Parser::Parser(istream& input, bool read_one_line) : data(), current_word()
 {
-    for (string line; getline(input, line);) {
+    bool read_next = true;
+    for (string line; read_next && getline(input, line);) {
         const string& cref_line = line;
         data.push_back(cref_line);
+
+        if(read_one_line){
+            read_next = false;
+        }
     }
     //reverse(data.begin(), data.end());
     //current_word = data.back();
@@ -204,17 +209,25 @@ vector<shared_ptr<Instruction>> Parser::makeInstructions()
             current_word += ch;
         }
 
+        bool is_command = false;
+        shared_ptr<Instruction> instruction;
         for (auto key_it = Instruction::KEYWORDS.begin(); key_it != Instruction::KEYWORDS.end(); ++key_it) {
             if (key_it->second == current_word) {
-                shared_ptr<Instruction> instruction = makeCommand(current_word, instruction_string);
+                instruction = makeCommand(current_word, instruction_string);
                 result.push_back(instruction);
-            }
-            else {
-                shared_ptr<Instruction> instruction = makeDeclaration(current_word, instruction_string);
+
+                is_command = true;
+                break;
             }
         }
+
+        if (!is_command) {
+            instruction = makeDeclaration(current_word, instruction_string);
+            result.push_back(instruction);
+        }
     }
-    return vector<shared_ptr<Instruction>>();
+
+    return result;
 }
 
 bool Parser::isEnclosedExpression() const
@@ -256,7 +269,7 @@ void Parser::openExpression()
     Parser::trimSideSpaces(current_word); //maybe make this function not static
 }
 
-list<string> Parser::getExpressionData()
+queue<string> Parser::getExpressionData()
 {
     if (current_word.empty()) {
         throw EmptyExpressionException("please enter a valid expression");
@@ -279,7 +292,7 @@ list<string> Parser::getExpressionData()
     SpecialCharacters operations_characters(Graph::OperationCharacters::toSpecialChars());
     string temp_word;
     string delimiter;
-    list<string> result;
+    queue<string> result;
     char current_ch = 0;
 
     while (!current_word.empty()) {
@@ -287,12 +300,16 @@ list<string> Parser::getExpressionData()
         if (containsChar(operations_characters, current_ch)) {
             if (!temp_word.empty()) {
                 trimSideSpaces(temp_word);
-                result.push_back(temp_word);
+                result.push(temp_word);
             }
             delimiter.push_back(current_ch);
-            result.push_back(delimiter);
+            result.push(delimiter);
             delimiter.pop_back();
+
+            current_word.erase(0,1);
+            trimSideSpaces(current_word);
             temp_word = "";
+            continue;
         }
         else if (current_ch == Instruction::EXPRESSION_BRACKET.left) {
             getExpressionDataAux(temp_word, result, Instruction::EXPRESSION_BRACKET);
@@ -308,24 +325,25 @@ list<string> Parser::getExpressionData()
             continue;
         }
         temp_word += current_ch;
+        current_word.erase(0,1);
     }
 
     if (!temp_word.empty()) {
-        result.push_back(temp_word);
+        result.push(temp_word);
     }
 
     return result;
 }
 
-void Parser::getExpressionDataAux(string& temp_word, list<string>& result, const BracketPattern& bracket_pattern) 
+void Parser::getExpressionDataAux(string& temp_word, queue<string>& result, const BracketPattern& bracket_pattern) 
 {
 
     if (!temp_word.empty()) {
         trimSideSpaces(temp_word);
-        result.push_back(temp_word);
+        result.push(temp_word);
     }
     temp_word = popFirstPair(bracket_pattern);
-    result.push_back(temp_word);
+    result.push(temp_word);
     temp_word = "";
 }
 string Parser::popFirstPair(const BracketPattern& BracketPattern)
@@ -335,6 +353,7 @@ string Parser::popFirstPair(const BracketPattern& BracketPattern)
     
     string result(left_it, right_it);
     current_word.erase(left_it,right_it);
+    trimSideSpaces(current_word);
 
     return result;
 }
@@ -538,12 +557,26 @@ Parser::GraphLiteralData Parser::decomposeGraphLiteral()
         throw GraphLiteralParserException("'" + current_word + "' is not a valid graph literal.");
     }
 
+    if (isValid(isspace, GRAPH_BRACKET.toSpecialCharacters())) {
+        return makeGraphLiteralData(vertices_data, edges_data); //empty graph
+    }
     string::const_iterator graph_delim_it = find(current_word.begin(), current_word.end(), GRAPH_BRACKET.delimiter);
     
     string vertices_data_string(current_word.cbegin()+1, graph_delim_it);
+
+    if (graph_delim_it == current_word.end()) {
+        if (isMatchingSequence(BracketPattern(EDGE_BRACKET.left,EDGE_BRACKET.right)) &&
+             current_word.find(EDGE_BRACKET.left) != string::npos) {
+            throw GraphLiteralParserException("please write all edges after '|' ");
+        }
+        vertices_data_string.pop_back();
+        vertices_data = split(vertices_data_string, OBJECT_DELIMITER);
+        
+        return makeGraphLiteralData(vertices_data, edges_data); //empty edge list without delimiter
+    }
     vertices_data = split(vertices_data_string, OBJECT_DELIMITER);
     
-    string temp_edges_data_string(graph_delim_it, current_word.cend());
+    string temp_edges_data_string(graph_delim_it+1, current_word.cend()-1);
     vector<string> temp_edges_data = split(temp_edges_data_string, EDGE_BRACKET);
 
     for (string edge_datum : temp_edges_data) {
@@ -670,7 +703,8 @@ shared_ptr<Instruction> makeDeclaration(const string& target_string, string inst
         declaration_data.push_back("");
         declaration_data.push_back("");
     }
-
+    Declaration d(declaration_data);
+    //d.execute()
     return make_shared<Declaration>(declaration_data);
 }
 

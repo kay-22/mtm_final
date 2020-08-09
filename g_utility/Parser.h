@@ -5,7 +5,7 @@
 #include <cctype>
 #include <functional>
 #include <vector>
-#include <list>
+#include <queue>
 #include <unordered_set>
 //#include <fstream>
 #include <istream>
@@ -28,7 +28,7 @@ namespace graph
     private:
         std::vector<std::string> data;
         std::string current_word;
-        void getExpressionDataAux(std::string&, std::list<std::string>&, const BracketPattern&);
+        void getExpressionDataAux(std::string&, std::queue<std::string>&, const BracketPattern&);
     public:
         typedef std::unordered_set<char> SpecialCharacters;
         static const SpecialCharacters NO_ADDITIONAL;
@@ -37,8 +37,8 @@ namespace graph
         static const BracketPattern VERTEX_BRACKET;
         static const char OBJECT_DELIMITER;
 
-        Parser(const std::string &current_word = std::string("")) : current_word(current_word) {}
-        Parser(std::istream& data_stram);
+        explicit Parser(const std::string &current_word = std::string("")) : current_word(current_word) {}
+        explicit Parser(std::istream& data_stram, bool read_one_line = false);
 
         /**
          * Finds the first mathcing pairs in the parser's current_word.
@@ -123,7 +123,7 @@ namespace graph
         bool isExpressionExists() const;
         //removes outer brackets from expression
         void openExpression();
-        std::list<std::string> getExpressionData();
+        std::queue<std::string> getExpressionData();
 
         std::string onlyChars(const SpecialCharacters&) const;
         const std::string& getCurrentWord() const;
