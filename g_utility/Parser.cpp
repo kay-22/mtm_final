@@ -12,6 +12,7 @@ using graph::Print;
 using graph::Save;
 using graph::Load;
 using graph::Empty;
+using graph::Who;
 using graph::MatchingSequenceParserException;
 using graph::GraphLiteralParserException;
 using graph::EmptyExpressionException;
@@ -155,7 +156,16 @@ bool Parser::isValid(string::const_iterator first_it, string::const_iterator las
 {
     return Parser(string(first_it, last_it)).isValid(isValidChar, contains, not_contains);
 }
+bool Parser::isKeyWord() const
+{
+    for (auto key_it = Instruction::KEYWORDS.begin(); key_it != Instruction::KEYWORDS.end(); ++key_it) {
+        if (key_it->second == current_word) {
+            return true;
+        }
+    }
 
+    return false;
+}
 const string& Parser::getCurrentWord() const
 {
     return current_word;
@@ -185,6 +195,7 @@ string Parser::onlyChars(const SpecialCharacters& special_characters) const
 
 vector<shared_ptr<Instruction>> Parser::makeInstructions()
 {
+    current_word = "";
     vector<shared_ptr<Instruction>> result;
     vector<string> instruction_data;
     if (data.empty()) {
@@ -209,22 +220,14 @@ vector<shared_ptr<Instruction>> Parser::makeInstructions()
             current_word += ch;
         }
 
-        bool is_command = false;
         shared_ptr<Instruction> instruction;
-        for (auto key_it = Instruction::KEYWORDS.begin(); key_it != Instruction::KEYWORDS.end(); ++key_it) {
-            if (key_it->second == current_word) {
-                instruction = makeCommand(current_word, instruction_string);
-                result.push_back(instruction);
-
-                is_command = true;
-                break;
-            }
+        if (isKeyWord()) {
+            instruction = makeCommand(current_word, instruction_string);
         }
-
-        if (!is_command) {
+        else {
             instruction = makeDeclaration(current_word, instruction_string);
-            result.push_back(instruction);
         }
+        result.push_back(instruction);
     }
 
     return result;
@@ -747,6 +750,11 @@ shared_ptr<Instruction> makeCommand(const string& command_string, string instruc
 
     else if (command_string == Instruction::KEYWORDS.at(Instruction::LOAD)) {
         command = make_shared<Load>(command_data);
+        
+    }
+
+    else if (command_string == Instruction::KEYWORDS.at(Instruction::WHO)) {
+        command = make_shared<Who>(command_data);
         
     }
 

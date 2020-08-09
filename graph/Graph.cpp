@@ -63,6 +63,11 @@ set<Edge> Graph::getEdgesSet() const
     return result;
 }
 
+const string& Graph::getName() const
+{
+    return name.toString();
+}
+
 bool Graph::containsVertex(const Vertex& vertex) const
 {
     return data.find(vertex) != data.end();
@@ -230,10 +235,9 @@ Graph Graph::operator*(const Graph& other_graph) const
 {
     Graph result;
 
-    const Vertex& temp = data.begin()->first; //just to get the pattertn    //
-    char left_bracket = temp.getBracketPattern().left;                      //
-    char right_bracket = temp.getBracketPattern().right;                    //should this be here?
-    char delimiter = temp.getBracketPattern().delimiter;                    //
+    char left_bracket = Parser::VERTEX_BRACKET.left;
+    char right_bracket = Parser::VERTEX_BRACKET.right;
+    char delimiter = Parser::VERTEX_BRACKET.delimiter;
 
     for (const auto& vertex_data : data) {
         //product of vertices without edges

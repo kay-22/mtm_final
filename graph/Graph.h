@@ -32,6 +32,7 @@ namespace graph
         void addVertex(const Vertex&);
         void addEdge(const Edge&);
         std::set<Edge> getEdgesSet() const;
+        const std::string& getName() const;
         bool containsVertex(const Vertex&) const;
         bool containsEdge(const Edge&) const;
         std::string makeLiteral() const;

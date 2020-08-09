@@ -10,6 +10,9 @@ VertexName::VertexName(const std::string& name) : Name(name), bracket_pattern('[
     if (name.empty()) {
         throw VertexNameException("name cannot be empty.");
     }
+    if (this->name.isKeyWord()){
+        throw VertexNameException("'" + name + "' is a reserved keyword");
+    }
     if (!isValidName()){
         throw VertexNameException("failed creating VertexName '" + name + "'. A valid vertex name consists of "
                                     "alphanumeric characters and '[', ']', and ';'. The brackets must "
@@ -30,4 +33,3 @@ bool VertexName::isValidName() const
     return name.isMatchingSequence(bracket_pattern);
 
 }
-

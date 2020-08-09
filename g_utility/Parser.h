@@ -92,6 +92,7 @@ namespace graph
             const SpecialCharacters& contains = NO_ADDITIONAL,
             const SpecialCharacters& not_contains = NO_ADDITIONAL) const;
         
+        bool isKeyWord() const;
         /**
          * Checks if the current_word is a matching squence of a given bracket pattern 
          * (e.g. "[;]" and "{{}}{|}" are valid sequences, and "<.>.>" and "[];" are not)

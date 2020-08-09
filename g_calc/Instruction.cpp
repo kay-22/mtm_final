@@ -15,6 +15,7 @@ using graph::Print;
 using graph::Save;
 using graph::Load;
 using graph::Empty;
+using graph::Who;
 using graph::BracketPattern;
 using graph::Parser;
 using graph::Graph;
@@ -30,7 +31,8 @@ const map<Instruction::keyword, string> Instruction::KEYWORDS = {
                                                                     {RESET, "reset"}, 
                                                                     {QUIT, "quit"}, 
                                                                     {SAVE, "save"}, 
-                                                                    {LOAD, "load"}
+                                                                    {LOAD, "load"},
+                                                                    {WHO, "who"}
                                                                 };
 
 //static string openExpression(const string& expression);
@@ -104,6 +106,18 @@ Instruction::code Save::execute(set<Graph>& who_set, ostream& out) {return okCod
 Instruction::code Load::execute(set<Graph>& who_set, ostream& out) {return okCode;}
 Instruction::code Empty::execute(set<Graph>& who_set, ostream& out) 
 {
+    return okCode;
+}
+
+Instruction::code Who::execute(set<Graph>& who_set, ostream& out) 
+{
+    if (!data.back().empty()) {
+        throw BadCommandExpression("'who' does not take any arguments");
+    }
+
+    for (const Graph& graph : who_set) {
+        out << graph.getName() << endl;
+    }
     return okCode;
 }
 
