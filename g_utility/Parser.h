@@ -68,7 +68,7 @@ namespace graph
             const BracketPattern& bracket_pattern, 
             std::string::const_iterator& right_it) const;
 
-        std::string popFirstPair(const BracketPattern& BracketPattern);
+        std::string popFirstPair(const BracketPattern& bracket_pattern);
         /**
          * Checks if the current_word is valid under certian criteria.
          * @param isValidChar a bool function whith a char argument that will check each charater in the current_word. 
@@ -128,7 +128,7 @@ namespace graph
         std::string onlyChars(const SpecialCharacters&) const;
         const std::string& getCurrentWord() const;
 
-        static void trimSideSpaces(std::string& string);
+        //static void trimSideSpaces(std::string& string);
         
         // advance current word to the next one in the data
         void next();

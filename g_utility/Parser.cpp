@@ -36,7 +36,7 @@ static vector<string> split(const string& data, BracketPattern bracket_pattern);
 static shared_ptr<Instruction> makeDeclaration(const string& target_string, string instruction_data);
 static shared_ptr<Instruction> makeCommand(const string& command_string, string instruction_data);
 static vector<string> makeCommandData(const string& command_string, string instruction_data);
-
+static void trimSideSpaces(std::string& string);
 Parser::Parser(istream& input, bool read_one_line) : data(), current_word()
 {
     bool read_next = true;
@@ -266,7 +266,7 @@ void Parser::openExpression()
     }
 
     current_word = string(current_word.begin()+1, current_word.end()-1);
-    Parser::trimSideSpaces(current_word); //maybe make this function not static
+    trimSideSpaces(current_word); //maybe make this function not static
 }
 
 queue<string> Parser::getExpressionData()
@@ -294,6 +294,7 @@ queue<string> Parser::getExpressionData()
     string delimiter;
     queue<string> result;
     char current_ch = 0;
+    string back_up = current_word;
 
     while (!current_word.empty()) {
         current_ch = current_word.front();
@@ -326,11 +327,14 @@ queue<string> Parser::getExpressionData()
         }
         temp_word += current_ch;
         current_word.erase(0,1);
+        //trimSideSpaces(current_word);
     }
 
     if (!temp_word.empty()) {
         result.push(temp_word);
     }
+
+    current_word = back_up;
 
     return result;
 }
@@ -346,10 +350,10 @@ void Parser::getExpressionDataAux(string& temp_word, queue<string>& result, cons
     result.push(temp_word);
     temp_word = "";
 }
-string Parser::popFirstPair(const BracketPattern& BracketPattern)
+string Parser::popFirstPair(const BracketPattern& bracket_pattern)
 {
     string::const_iterator right_it;
-    string::const_iterator left_it = findFirstPair(GRAPH_BRACKET, right_it);
+    string::const_iterator left_it = findFirstPair(bracket_pattern, right_it);
     
     string result(left_it, right_it);
     current_word.erase(left_it,right_it);
@@ -571,7 +575,7 @@ Parser::GraphLiteralData Parser::decomposeGraphLiteral()
         }
         vertices_data_string.pop_back();
         vertices_data = split(vertices_data_string, OBJECT_DELIMITER);
-        
+
         return makeGraphLiteralData(vertices_data, edges_data); //empty edge list without delimiter
     }
     vertices_data = split(vertices_data_string, OBJECT_DELIMITER);
@@ -626,9 +630,13 @@ vector<string> split(const string& data, char delimiter)
     istringstream data_input(data);
     for (string datum_string; getline(data_input, datum_string, delimiter);){
         if (!isspace(delimiter)) {
-            Parser::trimSideSpaces(datum_string);
+            trimSideSpaces(datum_string);
         }
         data_vector.push_back(datum_string);
+    }
+
+    if(data.back() == delimiter) {
+        data_vector.push_back("");
     }
 
     return data_vector;
@@ -660,7 +668,7 @@ vector<string> split(const string& data, BracketPattern bracket_pattern)
     return data_vector;   
 }
 
-void Parser::trimSideSpaces(string& string)
+void trimSideSpaces(string& string)
 {
     size_t count = 0;
     for (char ch : string){
@@ -684,7 +692,7 @@ shared_ptr<Instruction> makeDeclaration(const string& target_string, string inst
 
     if (target_string.size() < instruction_data.size()){
         instruction_data.erase(0, target_string.size());
-        Parser::trimSideSpaces(instruction_data);
+        trimSideSpaces(instruction_data);
 
         if(instruction_data.empty() || instruction_data.front() !=  Declaration::DECLARATION_CHAR) {
             declaration_data.push_back("");
@@ -694,7 +702,7 @@ shared_ptr<Instruction> makeDeclaration(const string& target_string, string inst
             declaration_data.push_back(string("") + Declaration::DECLARATION_CHAR);
             
             instruction_data.erase(0, 1);
-            Parser::trimSideSpaces(instruction_data);
+            trimSideSpaces(instruction_data);
 
             declaration_data.push_back(instruction_data);
         }
@@ -752,7 +760,7 @@ vector<string> makeCommandData(const string& command_string, string instruction_
     result.push_back(command_string);
     if (command_string.size() < instruction_data.size()){
         instruction_data.erase(0, command_string.size());
-        Parser::trimSideSpaces(instruction_data);
+        trimSideSpaces(instruction_data);
         
         result.push_back(instruction_data);
     }

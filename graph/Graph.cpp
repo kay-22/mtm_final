@@ -39,6 +39,10 @@ void Graph::addEdge(const Edge& edge)
             edge.first.getName() + ", " + edge.second.getName() + "> already exits.");
     }
 
+    if(edge.first == edge.second) {
+        throw GraphException("graph cannot have loops");
+    }
+
     //const Vertex* to_ptr = &data.find(to_vertex)->first;
     data.at(edge.first).insert(edge.second);
 }
@@ -80,18 +84,20 @@ bool Graph::containsEdge(const Edge& edge) const
 string Graph::makeLiteral() const
 {
     string result("{"); //update later literals to Parser::GRAPH_BRACKET
-    string edges(" |");
+    string edges("|");
 
     for (const auto& vertex_data : data) {
         const Vertex& vertex_i = vertex_data.first;
-        result += " " + vertex_i.getName() + ",";
+        result += vertex_i.getName() + ",";
 
         for (const Vertex& vertex_j : vertex_data.second) {
-            edges += " <" + vertex_i.getName() + ", " + vertex_j.getName() + ">,";
+            edges += "<" + vertex_i.getName() + "," + vertex_j.getName() + ">,";
         }
     }
-    result.pop_back(); // remove las ','
-    edges.pop_back(); //      ^
+    if (!data.empty()){    
+        result.pop_back(); // remove last ','
+        edges.pop_back(); //      ^
+    }
     result += edges + "}";
 
     return result;

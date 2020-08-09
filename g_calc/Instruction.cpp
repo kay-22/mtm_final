@@ -117,21 +117,21 @@ Graph evaluateExpression(const string& expression, const set<Graph>& who_set)
     if (expression_data.size() == 1) {
 
         if (expression_data.front().front() == Instruction::EXPRESSION_BRACKET.left) {
-            return evaluateExpression(expression, who_set); // open parentheses 
+            return evaluateExpression(expression_data.back(), who_set); // getExpressionData opens parentheses 
         }
 
         if (expression_data.front().front() == Parser::GRAPH_BRACKET.left) {
-            return makeGraph(expression); //graph literal
+            return makeGraph(expression_data.back()); //graph literal
         }
         else if (parser.isGraphOperator()) {
             throw OperatorExceptoin("operator " + parser.getCurrentWord() + " expected variable");
         }
 
-        Graph graph(expression);
+        Graph graph(expression_data.back());
 
         const set<Graph>::iterator& who_it = who_set.find(graph);
         if (who_it == who_set.end()) {
-            throw UndefinedVariableException("'" + expression + "'");
+            throw UndefinedVariableException("'" + expression_data.back() + "'");
         }
 
         graph = *who_it;
@@ -158,7 +158,7 @@ Graph evaluateExpression(const string& expression, const set<Graph>& who_set)
     }
 
     if (expression_data.size() == 1) {
-        throw OperatorExceptoin("expected binary operator");
+        throw OperatorExceptoin("expected binary operator before '" + expression_data.back() + "'");
     }
 
     char Operator = expression_data.front().front();
@@ -188,7 +188,7 @@ Graph evaluateExpression(const string& expression, const set<Graph>& who_set)
             break;
         
         default:
-            throw OperatorExceptoin("expected binary operator");
+            throw OperatorExceptoin("expected binary operator before '" + expression_data.back() + "'");
             break;
     }
     expression_data.pop();
