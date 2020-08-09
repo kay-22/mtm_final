@@ -2,8 +2,7 @@ CC = /usr/local/bin/gcc
 CXX = /usr/local/bin/g++
 
 GRPH_H = graph/Vertex.h \
-    graph/Graph.h \
-    GraphCalculator.h
+    graph/Graph.h
 
 GCLC_H = g_calc/GraphCalculator.h \
 	g_calc/Expression.h \
@@ -17,27 +16,26 @@ UTL_H = g_utility/Name.h \
 
 EXCEPT_H = g_except/Exception.h \
     g_except/NameException.h \
-    g_except/GraphException.h
-
-TST_H = g_test/GCTest.h \
-    g_test/GraphTest.h
+    g_except/GraphException.h \
+	g_except/InstructionException.h \
+	g_except/ParserException.h
 
 OBJS = main.o \
 	GraphCalculator.o \
 	Expression.o \
 	Instruction.o \
-	Graph.o \
-	Vertex.o \
-	GraphName.o \
-	VertexName.o \
-	GCFileName.o \
-	Name.o \
-	Parser.o \
 	Exception.o \
-	NameException.o \
 	GraphException.o \
-	GraphTest.o \
-	GCTest.o
+	InstructionException.o \
+	NameException.o \
+	ParserException.o \
+	GCFileName.o \
+	GraphName.o \
+	Name.o \	
+	Parser.o \
+	VertexName.o \
+	Graph.o \
+	Vertex.o
 
 INC = -I${CURDIR}
 EXEC = gcalc

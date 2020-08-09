@@ -3,7 +3,7 @@
 #include <string>
 
 // #include <g_utility.h>
-#include <g_test.h>
+//#include <g_test.h>
 // #include <g_except.h>
 #include "g_calc/GraphCalculator.h"
 
@@ -24,51 +24,51 @@ static const int INTERACTIVE_MODE = 1;
 static const int IN_FILE = 1;
 static const int OUT_FILE = 2;
 
-void foomain()
-{
-    GraphTest::run_all_tests();
+// void foomain()
+// {
+//     GraphTest::run_all_tests();
 
-    VertexName vn1("abc");
-    VertexName vn2(string("ab[]c"));
+//     VertexName vn1("abc");
+//     VertexName vn2(string("ab[]c"));
 
-    try {
-        VertexName vn3(string("ab[c"));
-    }
-    catch (const Exception& e) {
-        cout << e.what() << endl;
-    }
+//     try {
+//         VertexName vn3(string("ab[c"));
+//     }
+//     catch (const Exception& e) {
+//         cout << e.what() << endl;
+//     }
 
-    try {
-        VertexName vn4(string("ab][c"));
-    }
-    catch (const Exception& e) {
-        cout << e.what() << endl;
-    }
+//     try {
+//         VertexName vn4(string("ab][c"));
+//     }
+//     catch (const Exception& e) {
+//         cout << e.what() << endl;
+//     }
 
-    try {
-        VertexName vn5(string("[a;;b;c];["));
-    }
-    catch (const Exception& e) {
-        cout << e.what() << endl;
-    }
-       try {
-        VertexName vn8(string("[a;;b;c];[]"));
-    }
-    catch (const Exception& e) {
-        cout << e.what() << endl;
-    }
+//     try {
+//         VertexName vn5(string("[a;;b;c];["));
+//     }
+//     catch (const Exception& e) {
+//         cout << e.what() << endl;
+//     }
+//        try {
+//         VertexName vn8(string("[a;;b;c];[]"));
+//     }
+//     catch (const Exception& e) {
+//         cout << e.what() << endl;
+//     }
     
-    VertexName vn6(string("[a;][;][a;;b;c][[];][]"));
-    VertexName vn7(string("[a;;b;c][]"));
+//     VertexName vn6(string("[a;][;][a;;b;c][[];][]"));
+//     VertexName vn7(string("[a;;b;c][]"));
 
-    Graph ohoh = makeGraph("{a,b | <a,b>, <b, a>}", "gg");
-    cout << ohoh << endl;
+//     Graph ohoh = makeGraph("{a,b | <a,b>, <b, a>}", "gg");
+//     cout << ohoh << endl;
 
-    string ohoh_l = ohoh.makeLiteral();
-    cout << ohoh_l << endl;
+//     string ohoh_l = ohoh.makeLiteral();
+//     cout << ohoh_l << endl;
     
-    Graph ohohoh = makeGraph(ohoh_l, "ggg");
-    cout << ohohoh << endl;
+//     Graph ohohoh = makeGraph(ohoh_l, "ggg");
+//     cout << ohohoh << endl;
 
 }
 
