@@ -725,7 +725,7 @@ shared_ptr<Instruction> makeCommand(const string& command_string, string instruc
     shared_ptr<Instruction> command;
     
     if (command_string == Instruction::KEYWORDS.at(Instruction::QUIT)) {
-        shared_ptr<Instruction> command = make_shared<Quit>(command_data);
+        command = make_shared<Quit>(command_data);
     }
 
     else if (command_string == Instruction::KEYWORDS.at(Instruction::RESET)) {
