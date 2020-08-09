@@ -186,19 +186,19 @@ Graph evaluateExpression(const string& expression, const set<Graph>& who_set)
     switch (Operator)
     {
         case Graph::OperationCharacters::UNION:
-            result_graph = result_graph + current_graph; //+=
+            result_graph = result_graph + current_graph; //+= need to make
             break;
         
         case Graph::OperationCharacters::INTERSECTION:
-            result_graph = result_graph ^ current_graph; //+=
+            result_graph = result_graph ^ current_graph; //^=
             break;
         
         case Graph::OperationCharacters::PRODUCT:
-            result_graph = result_graph * current_graph; //+=
+            result_graph = result_graph * current_graph; //*=
             break;
         
         case Graph::OperationCharacters::DIFFERENCE:
-            result_graph = result_graph + current_graph; //+=
+            result_graph = result_graph - current_graph; //-=
             break;
         
         default:
