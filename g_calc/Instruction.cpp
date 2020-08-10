@@ -5,6 +5,8 @@ using std::set;
 using std::queue;
 using std::string;
 using std::ostream;
+using std::ifstream;
+using std::ios_base;
 using std::endl;
 using graph::Instruction;
 using graph::Declaration;
@@ -102,8 +104,88 @@ Instruction::code Quit::execute(set<Graph>& who_set, ostream& out)
     }
     return quitCode;
 }
-Instruction::code Save::execute(set<Graph>& who_set, ostream& out) {return okCode;}
-Instruction::code Load::execute(set<Graph>& who_set, ostream& out) {return okCode;}
+Instruction::code Save::execute(set<Graph>& who_set, ostream& out) 
+{
+    Graph graph(data.at(1));
+    const auto& who_it = who_set.find(graph);
+    if (who_it == who_set.end()) {
+        //throw graph does not exist
+    }
+    graph = *who_it;
+
+    set<Edge> edges = graph.getEdgesSet();
+    unsigned int num_vertices = graph.size();
+    unsigned int num_edges = edges.size();
+
+    outfile.write((const char*)&num_vertices, sizeof(unsigned int));
+    outfile.write((const char*)&num_edges, sizeof(unsigned int));
+
+    for (const auto& vertex_datum : graph){
+        string vertex_name(vertex_datum.first.getName());
+        unsigned int vertex_name_length = vertex_name.size();
+        outfile.write((const char*)&vertex_name_length, sizeof(unsigned int));
+        outfile.write(&vertex_name[0], vertex_name_length);
+    }
+
+    for (const Edge& edge : edges){
+        string vertex_from_name(edge.first.getName());
+        unsigned int vertex_name_length = vertex_from_name.size();
+        outfile.write((const char*)&vertex_name_length, sizeof(unsigned int)); //make function for this
+        outfile.write(&vertex_from_name[0], vertex_name_length);
+        
+        string vertex_to_name(edge.first.getName());
+        vertex_name_length = vertex_to_name.size();
+        outfile.write((const char*)&vertex_name_length, sizeof(unsigned int));
+        outfile.write(&vertex_to_name[0], vertex_name_length);
+    }
+
+    return okCode;
+}
+Instruction::code Load::execute(set<Graph>& who_set, ostream& out) 
+{//actually should return bad operator
+
+    Graph result;
+    string filename = data.back();
+    ifstream infile(filename, ios_base::binary);
+    if(!infile) {
+        //throw
+    }
+
+    unsigned int num_vertices = 0;
+    unsigned int num_edges= 0;
+    infile.read((char*)&num_vertices, sizeof(unsigned int));
+    infile.read((char*)&num_edges, sizeof(unsigned int));
+
+    for (int i = 0; i< num_vertices; ++i) {
+        unsigned int vertex_name_lenght = 0;
+        infile.read((char*)&num_edges, sizeof(unsigned int));//make function for this
+        
+        string vertex_name(vertex_name_lenght, 0);
+        infile.read(&vertex_name[0], sizeof(unsigned int));
+
+        result.addVertex(Vertex(vertex_name));
+    }
+
+    for (int i = 0; i < num_edges; ++i) {
+        unsigned int vertex_name_lenght = 0;
+
+        infile.read((char*)&num_edges, sizeof(unsigned int));
+        string vertex_from_name(vertex_name_lenght, 0);
+        infile.read(&vertex_from_name[0], sizeof(unsigned int));        
+
+        infile.read((char*)&num_edges, sizeof(unsigned int));
+        string vertex_to_name(vertex_name_lenght, 0);
+        infile.read(&vertex_to_name[0], sizeof(unsigned int));
+
+        Vertex vertex_from(vertex_from_name);
+        Vertex vertex_to(vertex_to_name);
+
+        result.addEdge(makeEdge(vertex_from, vertex_to));
+    }
+
+    return result;
+    return okCode;
+}
 Instruction::code Empty::execute(set<Graph>& who_set, ostream& out) 
 {
     return okCode;

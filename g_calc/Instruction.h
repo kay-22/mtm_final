@@ -2,6 +2,7 @@
 #define INSTRUCTION_H
 
 #include <ostream>
+#include <fstream>
 #include <string>
 #include <vector>
 #include <map>

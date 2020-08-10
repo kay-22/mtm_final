@@ -128,6 +128,11 @@ Graph::const_iterator Graph::end() const
     return data.end();
 }
 
+int Graph::size() const
+{
+    return data.size()
+}
+
 Graph& Graph::operator=(Graph copy)
 {
     swap(data, copy.data); //swappable?

@@ -43,6 +43,7 @@ namespace graph
         const_iterator begin() const;
         //iterator end();
         const_iterator end() const;
+        int size() const;
 
         Graph& operator=(Graph); //copies by value to avoid copying twice.
         //Graph& operator+=(const Graph&);
