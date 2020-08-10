@@ -17,7 +17,8 @@
 namespace graph
 {
     
-    typedef std::pair<Vertex, Vertex> Edge;
+    //typedef std::pair<Vertex, Vertex> Edge;
+    struct Edge;
     //typdef std::map<Vertex, std::set<Vertex>> GraphData;
     class Graph
     {
@@ -72,6 +73,16 @@ namespace graph
     //makes a graph from a literal graph strign and throws appropriate exceptions
     Graph makeGraph(const std::string& graph_literal, const std::string& graph_name = "unnamed");
     Edge makeEdge(const Vertex&, const Vertex&);
+
+    struct Edge 
+    {
+    public:
+        Vertex first;
+        Vertex second;
+        Edge(const Vertex& first, const Vertex& second) : first(first), second(second) {}
+        bool operator<(const Edge& other) const;
+        bool operator==(const Edge& other) const;
+    };
 } // namespace graph
 
 std::ostream& operator<<(std::ostream& os, const graph::Graph& graph);

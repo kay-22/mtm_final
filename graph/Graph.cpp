@@ -350,7 +350,8 @@ Graph graph::makeGraph(const string& graph_literal, const string& graph_name)
 
 Edge graph::makeEdge(const Vertex& from, const Vertex& to)
 {
-    return make_pair(from, to);
+    //return make_pair(from, to);
+    return Edge(from, to);
 }
 //needs Vertex() to work
 // vector<Vertex> Graph::getVertices() const
@@ -361,3 +362,23 @@ Edge graph::makeEdge(const Vertex& from, const Vertex& to)
 
 //     return vertices;
 // }
+
+bool Edge::operator==(const Edge& other) const
+{
+    return first==other.first && second==other.second;
+}
+
+bool Edge::operator<(const Edge& other) const
+{
+    if (first<other.first) {
+        return true;
+    }
+    else if (other.first <first) {
+        return false;
+    }
+    else if (second < other.second) {
+        return true;
+    }
+    
+    return false;
+}
