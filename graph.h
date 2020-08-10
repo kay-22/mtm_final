@@ -7,11 +7,11 @@
 typedef graph::Graph* pygraph;
 
 pygraph create();
-void destroy(pygraph);
+void destroy(pygraph graph);
 
-pygraph addVertex(pygraph, char* vertex);
-pygraph addEdge(pygraph, char* v1, char* v2);
-void disp(pygraph);
+pygraph addVertex(pygraph graph, char* vertex);
+pygraph addEdge(pygraph graph, char* v1, char* v2);
+void disp(pygraph graph);
 
 pygraph graphUnion(pygraph in1, pygraph in2, pygraph out);
 pygraph graphIntersection(pygraph in1, pygraph in2, pygraph out);

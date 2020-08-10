@@ -1,16 +1,16 @@
 #include "graph.h"
 
-using graph::Graph;
-using graph::Vertex;
-using graph::Edge;
-using graph::makeEdge;
-using graph::Exception;
-using std::cout;
-using std::endl;
+//using graph::Graph;
+//using graph::Vertex;
+//using graph::Edge;
+//using graph::makeEdge;
+//using graph::Exception;
+//using std::cout;
+//using std::endl;
 
 pygraph create()
 {
-    return new Graph();
+    return new graph::Graph();
 }
 
 void destroy(pygraph graph)
@@ -23,32 +23,32 @@ pygraph addVertex(pygraph graph, const char* vertex)
     pygraph result = graph;
 
     try{
-        graph->addVertex(Vertex(vertex));
+        graph->addVertex(graph::Vertex(vertex));
     }
-    catch (const Exception& e) {
-        cout << e.what() << endl;
+    catch (const graph::Exception& e) {
+        std::cout << e.what() << std::endl;
         result = nullptr;
     }
-    return graph;
+    return result;
 }
 pygraph addEdge(pygraph graph, char* v1, const char* v2)
 {
     pygraph result = graph;
     try {
-        const Edge& edge = makeEdge(Vertex(v1), Vertex(v2));
+        const std::pair<graph::Vertex, graph::Vertex>& edge = makeEdge(graph::Vertex(v1), graph::Vertex(v2));
         graph->addEdge(edge);
     }
-    catch (const Exception& e) {
-        cout << e.what() << endl;
+    catch (const graph::Exception& e) {
+        std::cout << e.what() << std::endl;
         result = nullptr;
     }
 
-    return graph;
+    return result;
 }
 
 void disp(pygraph graph)
 {
-    cout << *graph << endl;
+    std::cout << *graph << std::endl;
 }
 
 pygraph graphUnion(pygraph in1, pygraph in2, pygraph out)

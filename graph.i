@@ -1,10 +1,9 @@
 %module graph
-%include "graph.h"
 %{
 #include "graph.h"
-#include "graph/Graph.h"
-typedef graph::Graph* pygraph;
 %}
+
+typedef graph::Graph* pygraph;
 
 pygraph create();
 void destroy(pygraph);
