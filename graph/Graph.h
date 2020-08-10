@@ -10,9 +10,9 @@
 #include <ostream>
 
 #include "Vertex.h"
-#include <g_utility/GraphName.h>
-#include <g_except/GraphException.h>
-#include <g_utility/Parser.h>
+#include "../g_utility/GraphName.h"
+#include "../g_except/GraphException.h"
+#include "../g_utility/Parser.h"
 
 namespace graph
 {

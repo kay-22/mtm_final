@@ -1,10 +1,10 @@
-#ifndef PYGRAPH_H
-#define PYGRAPH_H
-
-#include <iostream>
-#include <graph/Graph.h>
-
+%module graph
+%include "graph.h"
+%{
+#include "graph.h"
+#include "graph/Graph.h"
 typedef graph::Graph* pygraph;
+%}
 
 pygraph create();
 void destroy(pygraph);
@@ -18,6 +18,3 @@ pygraph graphIntersection(pygraph in1, pygraph in2, pygraph out);
 pygraph graphDifference(pygraph in1, pygraph in2, pygraph out);
 pygraph graphProduct(pygraph in1, pygraph in2, pygraph out);
 pygraph graphComplement(pygraph in, pygraph out);
-
-#endif // PYGRAPH_H
- 

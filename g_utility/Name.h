@@ -5,7 +5,7 @@
 #include <cctype>
 #include <unordered_set>
 
-#include <g_except/NameException.h> //do not delete
+#include "../g_except/NameException.h" //do not delete
 #include "Parser.h"
 
 namespace graph

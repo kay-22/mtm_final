@@ -8,8 +8,8 @@
 #include <set>
 #include <queue>
 
-#include <graph/Graph.h>
-#include <g_except/InstructionException.h>
+#include "../graph/Graph.h"
+#include "../g_except/InstructionException.h"
 
 namespace graph
 {
