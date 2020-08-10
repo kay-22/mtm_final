@@ -59,12 +59,11 @@ static void writeVertexBytes(ofstream& out, const Vertex& vertex);
 
 Instruction::code Declaration::execute(set<Graph>& who_set, ostream& out)  
 {
-    Graph graph(data.at(DEC_VARIABLE));// make constatns for placeholders
     if (data.at(DEC_OPERATOR).empty()) {
-        throw BadCommandExpression(string("did you mean ") + data.at(DEC_VARIABLE) + 
-                                                             DECLARATION_CHAR + data.at(DEC_EXPRESSION) + 
-                                                             string("?"));
+        throw BadCommandExpression(string("make sure the variable is not an expression"));
     }
+    Graph graph(data.at(DEC_VARIABLE));// make constatns for placeholders
+
     
     graph = evaluateExpression(data.at(2), who_set);
     replaceGraph(who_set, graph);

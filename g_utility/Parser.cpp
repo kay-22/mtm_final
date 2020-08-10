@@ -709,7 +709,7 @@ shared_ptr<Instruction> makeDeclaration(const string& target_string, string inst
 
         if(instruction_data.empty() || instruction_data.front() !=  Declaration::DECLARATION_CHAR) {
             declaration_data.push_back("");
-            declaration_data.push_back("");
+            declaration_data.push_back(instruction_data);
         }
         else {
             declaration_data.push_back(string("") + Declaration::DECLARATION_CHAR);
@@ -724,8 +724,7 @@ shared_ptr<Instruction> makeDeclaration(const string& target_string, string inst
         declaration_data.push_back("");
         declaration_data.push_back("");
     }
-    Declaration d(declaration_data);
-    //d.execute()
+    
     return make_shared<Declaration>(declaration_data);
 }
 
