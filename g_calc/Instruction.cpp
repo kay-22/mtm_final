@@ -281,7 +281,10 @@ bool handleComplement(queue<string>& expression_data)
 void handleLoad(queue<string>& expression_data) 
 {
     expression_data.pop(); //no use of load keyword
-    Graph graph = load(expression_data.front());
+    Parser parser(expression_data.front());
+    parser.openExpression();
+
+    Graph graph = load(parser.getCurrentWord());
     string new_expression = graph.makeLiteral();
     expression_data.front() = new_expression;
 }
@@ -326,7 +329,7 @@ Vertex readVertexBytes(ifstream& infile)
     infile.read((char*)&vertex_name_lenght, sizeof(unsigned int));
     
     string vertex_name(vertex_name_lenght, 0);
-    infile.read(&vertex_name[0], sizeof(unsigned int));
+    infile.read(&vertex_name[0], vertex_name_lenght);
 
     return Vertex(vertex_name);
 }
