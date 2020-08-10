@@ -1,0 +1,54 @@
+G1 = {x1, x2, x3 | <x1, x2>} + !{a ,b} *!({}+{|})
+save ( G 1,)
+save (,)
+save (     ,  )
+save ( G1 ,     g1.gc )
+G2=!G1 +(load(g1)+G1*G1 *G1*(!G1+(G1-G1)+G1))+ !{a,b,x,s}*{a,s,g,d|<s,d>,<a,g>}
+G3 = (G1*(((((G2))   )) ) - !{print,who}
+print(load(g1.gc) + G2)
+(print())
+print()
+()
+-
++
+=
+g==
+g=+
+g=3
+3g=G3
+G=G2+ G1 G4
+ G=G2+ G1 G4
+G =G3 g ^g
+g=g
+g=!G2
+who
+who who
+ who
+who 
+g=g
+delete(g)
+who
+g=g
+G={a,b,f,g} ^{a,f,g} *{hello}
+who
+G=G*G
+G2=G2*G2
+G2={{a,b}}
+G2=!G1 +(load(g1)+G1*G1 *G1*(!G1+(G1-G 1)+G1))+ !{a,b,x,s}*{a,s,g,d|<s,d>,<a,g>}
+print(G2)
+G2=!G1 +(load(g1)+G1*G1 *G1*(!G1+(G1-G1)+G1))+ !{a,b,x,s}*{a,s,g,d|<s,d>,<a,g>}
+print(!G1 +(load(g1)+G1*G1 *G1*(!G1+(G1-G1)+G1))+ !{a,b,x,s}*{a,s,g,d|<s,d>,<a,g>})
+G2   == G1
+print(G2)
+delete(print(save(load(delete(print()))))) 
+delete(G2)
+reset
+who
+G=({})
+G=({,,,|<,>})
+quit
+G=G2
+who
+print(G)
+G=!{a,b}
+print(G)
