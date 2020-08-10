@@ -789,6 +789,9 @@ vector<string> makeCommandData(const string& command_string, string instruction_
                 if (delim_pos != string::npos)  {
                     string graph_arg(instruction_data.substr(1,delim_pos-1));
                     filename_arg = instruction_data.substr(delim_pos+1, instruction_data.size()-1-delim_pos-1);
+
+                    trimSideSpaces(graph_arg);
+                    trimSideSpaces(filename_arg);
                     result.push_back(graph_arg);
                 }   
                 result.push_back(filename_arg);
