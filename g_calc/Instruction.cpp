@@ -40,9 +40,14 @@ const map<Instruction::keyword, string> Instruction::KEYWORDS = {
                                                                     {WHO, "who"}
                                                                 };
 
-//static string openExpression(const string& expression);
-//static bool isExpressionExists(const string& expression);
-//static bool isEnclosedExpression(const string& expression);
+static const int SAVE_GRAPH_VAR = 2;
+static const int SAVE_EXPRESSION = 1;
+static const int SAVE_ARGS = 4;
+static const int SAVE_FILENAME = 3;
+static const int DEC_VARIABLE = 0;
+static const int DEC_OPERATOR = 1;
+static const int DEC_EXPRESSION = 2;
+
 static Graph evaluateExpression(const string& expression, const std::set<Graph>& who_set);
 static bool handleComplement(queue<string>& expression_data);
 static void handleLoad(queue<string>& expression_data);
@@ -54,9 +59,11 @@ static void writeVertexBytes(ofstream& out, const Vertex& vertex);
 
 Instruction::code Declaration::execute(set<Graph>& who_set, ostream& out)  
 {
-    Graph graph(data.at(0));// make constatns for placeholders
-    if (data.at(1).empty()) {
-        throw BadCommandExpression(string("did you mean ") + data.at(0) + DECLARATION_CHAR + data.at(2) + string("?"));
+    Graph graph(data.at(DEC_VARIABLE));// make constatns for placeholders
+    if (data.at(DEC_OPERATOR).empty()) {
+        throw BadCommandExpression(string("did you mean ") + data.at(DEC_VARIABLE) + 
+                                                             DECLARATION_CHAR + data.at(DEC_EXPRESSION) + 
+                                                             string("?"));
     }
     
     graph = evaluateExpression(data.at(2), who_set);
@@ -109,16 +116,23 @@ Instruction::code Quit::execute(set<Graph>& who_set, ostream& out)
 
 Instruction::code Save::execute(set<Graph>& who_set, ostream& out) 
 {
-    Graph graph(data.at(1));
+    if (!Parser(data.at(SAVE_EXPRESSION)).isEnclosedExpression()) {
+        throw BadCommandExpression("did you mean 'save(<graph name>, <filename>)'?");
+    }
+    if (data.size() != SAVE_ARGS) {
+        throw BadCommandExpression("'save' is missing arguments");
+    }
+    
+    Graph graph(data.at(SAVE_GRAPH_VAR));
     const auto& who_it = who_set.find(graph);
     if (who_it == who_set.end()) {
-        throw UndefinedVariableException("'" + data.at(1) + "'");
+        throw UndefinedVariableException("'" + data.at(SAVE_GRAPH_VAR) + "'");
     }
     graph = *who_it;
 
-    ofstream outfile(data.back(), ios_base::binary);
+    ofstream outfile(data.at(SAVE_FILENAME), ios_base::binary);
     if (!outfile){
-        throw FileException("could not open '" + data.back() + "'");
+        throw FileException("could not open '" + data.at(SAVE_FILENAME) + "'");
     }
 
     set<Edge> edges = graph.getEdgesSet();

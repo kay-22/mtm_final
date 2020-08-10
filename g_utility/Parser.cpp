@@ -781,6 +781,19 @@ vector<string> makeCommandData(const string& command_string, string instruction_
         trimSideSpaces(instruction_data);
         
         result.push_back(instruction_data);
+
+        if (command_string == Instruction::KEYWORDS.at(Instruction::SAVE) && 
+            Parser(instruction_data).isEnclosedExpression()) {
+                size_t delim_pos = instruction_data.find(Parser::OBJECT_DELIMITER);
+                string filename_arg;
+                if (delim_pos != string::npos)  {
+                    string graph_arg(instruction_data.substr(1,delim_pos-1));
+                    filename_arg = instruction_data.substr(delim_pos+1, instruction_data.size()-1-delim_pos-1);
+                    result.push_back(graph_arg);
+                }   
+                result.push_back(filename_arg);
+        }
+
     }
     else {
         result.push_back("");
