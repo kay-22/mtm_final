@@ -2,7 +2,8 @@ CC = /usr/local/bin/gcc
 CXX = /usr/local/bin/g++
 
 GRPH_H = graph/Vertex.h \
-    graph/Graph.h
+	graph/Graph.h\
+	graph.h
 
 GCLC_H = g_calc/GraphCalculator.h \
 	g_calc/Instruction.h
@@ -33,9 +34,11 @@ OBJS = main.o \
 	Parser.o \
 	VertexName.o \
 	Graph.o \
-	Vertex.o
+	Vertex.o \
+	graph.o
 
 EXEC = gcalc
+LIB = libgraph.a
 RELEASE =-DNDEBUG
 DEBUG =#-g
 COMP = -std=c++11 -Wall -Werror -pedantic-errors -fPIC
@@ -131,11 +134,22 @@ Vertex.o: graph/Vertex.cpp graph/Vertex.h g_utility/VertexName.h \
  g_except/InstructionException.h
 	${CXX} -c ${DEBUG} ${COMP} ${RELEASE} graph/Vertex.cpp
 
-libgraph.a : ${OBJS}
+graph.o: graph.cpp graph.h graph/Graph.h graph/Vertex.h \
+ graph/../g_utility/VertexName.h graph/../g_utility/Name.h \
+ graph/../g_utility/../g_except/NameException.h \
+ graph/../g_utility/../g_except/Exception.h graph/../g_utility/Parser.h \
+ graph/../g_utility/../g_except/ParserException.h \
+ graph/../g_utility/../g_except/InstructionException.h \
+ graph/../g_utility/GraphName.h graph/../g_except/GraphException.h \
+ graph/../g_except/Exception.h graph/../g_utility/Parser.h
+	${CXX} -c ${DEBUG} ${COMP} ${RELEASE} graph.cpp
+
+${LIB} : ${OBJS}
 	ar -rs $@ $^
 
 tar:
+	make clean
 	zip -r ${EXEC}.zip .
 
 clean:
-	rm -f ${OBJS} ${EXEC} ${EXEC}.zip
+	rm -f ${OBJS} ${EXEC} ${EXEC}.zip ${LIB}
