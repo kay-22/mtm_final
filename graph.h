@@ -4,18 +4,20 @@
 #include <iostream>
 #include "graph/Graph.h"
 
-graph::Graph* create();
-void destroy(graph::Graph* graph);
+typedef graph::Graph* pygraph;
 
-//graph::Graph* addVertex(graph::Graph* graph, char* vertex);
-graph::Graph* addEdge(graph::Graph* graph, const char* v1, const char* v2);
-void disp(graph::Graph* g);
+pygraph create();
+void destroy(pygraph graph);
 
-graph::Graph* graphUnion(graph::Graph* in1, graph::Graph* in2, graph::Graph* out);
-graph::Graph* graphIntersection(graph::Graph* in1, graph::Graph* in2, graph::Graph* out);
-graph::Graph* graphDifference(graph::Graph* in1, graph::Graph* in2, graph::Graph* out);
-graph::Graph* graphProduct(graph::Graph* in1, graph::Graph* in2, graph::Graph* out);
-graph::Graph* graphComplement(graph::Graph* in, graph::Graph* out);
+pygraph addVertex(pygraph graph, const char* vertex);
+pygraph addEdge(pygraph graph, const char* v1, const char* v2);
+void disp(pygraph g);
+
+pygraph graphUnion(pygraph in1, pygraph in2, pygraph out);
+pygraph graphIntersection(pygraph in1, pygraph in2, pygraph out);
+pygraph graphDifference(pygraph in1, pygraph in2, pygraph out);
+pygraph graphProduct(pygraph in1, pygraph in2, pygraph out);
+pygraph graphComplement(pygraph in, pygraph out);
 
 #endif // PYGRAPH_H
  
