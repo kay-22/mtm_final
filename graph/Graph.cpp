@@ -130,7 +130,7 @@ Graph::const_iterator Graph::end() const
 
 int Graph::size() const
 {
-    return data.size()
+    return data.size();
 }
 
 Graph& Graph::operator=(Graph copy)

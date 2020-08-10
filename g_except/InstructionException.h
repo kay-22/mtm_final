@@ -36,11 +36,18 @@ namespace graph
         virtual ~BadCommandExpression() = default;
     };
 
-    class OperatorExceptoin : public InstructionException
+    class OperatorException : public InstructionException
     {
     public:
-        OperatorExceptoin(const std::string& error_message);
-        virtual ~OperatorExceptoin() = default;
+        OperatorException(const std::string& error_message);
+        virtual ~OperatorException() = default;
+    };
+
+    class FileException  : public InstructionException
+    {
+    public:
+        FileException (const std::string& error_message);
+        virtual ~FileException () = default;
     };
 
 } // namespace graph

@@ -4,7 +4,8 @@ using graph::InstructionException;
 using graph::EmptyExpressionException;
 using graph::BadCommandExpression;
 using graph::UndefinedVariableException;
-using graph::OperatorExceptoin;
+using graph::OperatorException;
+using graph::FileException;
 using std::string;
 
 
@@ -32,8 +33,14 @@ BadCommandExpression::BadCommandExpression(const string& error_message) :
     this->error_message += error_message;
 }
 
-OperatorExceptoin::OperatorExceptoin(const string& error_message) : 
+OperatorException::OperatorException(const string& error_message) : 
     InstructionException("bad operator -- ")
+{
+    this->error_message += error_message;
+}
+
+FileException::FileException(const string& error_message) : 
+    InstructionException("file error -- ")
 {
     this->error_message += error_message;
 }

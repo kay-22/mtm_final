@@ -6,6 +6,7 @@ using std::queue;
 using std::string;
 using std::ostream;
 using std::ifstream;
+using std::ofstream;
 using std::ios_base;
 using std::endl;
 using graph::Instruction;
@@ -21,10 +22,12 @@ using graph::Who;
 using graph::BracketPattern;
 using graph::Parser;
 using graph::Graph;
+using graph::Vertex;
 using graph::makeGraph;
 using graph::BadCommandExpression;
 using graph::UndefinedVariableException;
-using graph::OperatorExceptoin;
+using graph::OperatorException;
+using graph::FileException;
 
 const BracketPattern Instruction::EXPRESSION_BRACKET('(',')');
 const map<Instruction::keyword, string> Instruction::KEYWORDS = {
@@ -42,6 +45,12 @@ const map<Instruction::keyword, string> Instruction::KEYWORDS = {
 //static bool isEnclosedExpression(const string& expression);
 static Graph evaluateExpression(const string& expression, const std::set<Graph>& who_set);
 static bool handleComplement(queue<string>& expression_data);
+static void handleLoad(queue<string>& expression_data);
+static Graph load(const string& filename);
+static void replaceGraph (set<Graph>& who_set, Graph& graph);
+static Vertex readVertexBytes(ifstream& infile);
+static void writeVertexBytes(ofstream& out, const Vertex& vertex);
+
 
 Instruction::code Declaration::execute(set<Graph>& who_set, ostream& out)  
 {
@@ -51,11 +60,7 @@ Instruction::code Declaration::execute(set<Graph>& who_set, ostream& out)
     }
     
     graph = evaluateExpression(data.at(2), who_set);
-
-    if (who_set.find(graph) != who_set.end()) {
-        who_set.erase(graph); //finds graph with the same name, but data can be different
-    } 
-    who_set.insert(graph);
+    replaceGraph(who_set, graph);
 
     return okCode;
 }
@@ -64,10 +69,6 @@ Instruction::code Print::execute(set<Graph>& who_set, ostream& out)
 {
     Parser parser(data.back());
     parser.openExpression();
-
-    // if (parser.getCurrentWord().empty()){ //openExpression should throw if empty
-    //     throw 
-    // }
     
     const Graph& graph = evaluateExpression(parser.getCurrentWord(), who_set);
 
@@ -104,14 +105,21 @@ Instruction::code Quit::execute(set<Graph>& who_set, ostream& out)
     }
     return quitCode;
 }
+
+
 Instruction::code Save::execute(set<Graph>& who_set, ostream& out) 
 {
     Graph graph(data.at(1));
     const auto& who_it = who_set.find(graph);
     if (who_it == who_set.end()) {
-        //throw graph does not exist
+        throw UndefinedVariableException("'" + data.at(1) + "'");
     }
     graph = *who_it;
+
+    ofstream outfile(data.back(), ios_base::binary);
+    if (!outfile){
+        throw FileException("could not open '" + data.back() + "'");
+    }
 
     set<Edge> edges = graph.getEdgesSet();
     unsigned int num_vertices = graph.size();
@@ -121,73 +129,25 @@ Instruction::code Save::execute(set<Graph>& who_set, ostream& out)
     outfile.write((const char*)&num_edges, sizeof(unsigned int));
 
     for (const auto& vertex_datum : graph){
-        string vertex_name(vertex_datum.first.getName());
-        unsigned int vertex_name_length = vertex_name.size();
-        outfile.write((const char*)&vertex_name_length, sizeof(unsigned int));
-        outfile.write(&vertex_name[0], vertex_name_length);
+        writeVertexBytes(outfile,vertex_datum.first);
     }
 
     for (const Edge& edge : edges){
-        string vertex_from_name(edge.first.getName());
-        unsigned int vertex_name_length = vertex_from_name.size();
-        outfile.write((const char*)&vertex_name_length, sizeof(unsigned int)); //make function for this
-        outfile.write(&vertex_from_name[0], vertex_name_length);
-        
-        string vertex_to_name(edge.first.getName());
-        vertex_name_length = vertex_to_name.size();
-        outfile.write((const char*)&vertex_name_length, sizeof(unsigned int));
-        outfile.write(&vertex_to_name[0], vertex_name_length);
+        writeVertexBytes(outfile,edge.first);
+        writeVertexBytes(outfile, edge.second);
     }
 
     return okCode;
 }
+
 Instruction::code Load::execute(set<Graph>& who_set, ostream& out) 
-{//actually should return bad operator
-
-    Graph result;
-    string filename = data.back();
-    ifstream infile(filename, ios_base::binary);
-    if(!infile) {
-        //throw
-    }
-
-    unsigned int num_vertices = 0;
-    unsigned int num_edges= 0;
-    infile.read((char*)&num_vertices, sizeof(unsigned int));
-    infile.read((char*)&num_edges, sizeof(unsigned int));
-
-    for (int i = 0; i< num_vertices; ++i) {
-        unsigned int vertex_name_lenght = 0;
-        infile.read((char*)&num_edges, sizeof(unsigned int));//make function for this
-        
-        string vertex_name(vertex_name_lenght, 0);
-        infile.read(&vertex_name[0], sizeof(unsigned int));
-
-        result.addVertex(Vertex(vertex_name));
-    }
-
-    for (int i = 0; i < num_edges; ++i) {
-        unsigned int vertex_name_lenght = 0;
-
-        infile.read((char*)&num_edges, sizeof(unsigned int));
-        string vertex_from_name(vertex_name_lenght, 0);
-        infile.read(&vertex_from_name[0], sizeof(unsigned int));        
-
-        infile.read((char*)&num_edges, sizeof(unsigned int));
-        string vertex_to_name(vertex_name_lenght, 0);
-        infile.read(&vertex_to_name[0], sizeof(unsigned int));
-
-        Vertex vertex_from(vertex_from_name);
-        Vertex vertex_to(vertex_to_name);
-
-        result.addEdge(makeEdge(vertex_from, vertex_to));
-    }
-
-    return result;
+{
+    throw BadCommandExpression("'load' is an expression. Expressions cannot right side values.");
     return okCode;
 }
 Instruction::code Empty::execute(set<Graph>& who_set, ostream& out) 
 {
+    //empty command
     return okCode;
 }
 
@@ -220,7 +180,7 @@ Graph evaluateExpression(const string& expression, const set<Graph>& who_set)
             return makeGraph(expression_data.back()); //graph literal
         }
         else if (parser.isGraphOperator()) {
-            throw OperatorExceptoin("operator " + parser.getCurrentWord() + " expected variable");
+            throw OperatorException("operator " + parser.getCurrentWord() + " expected variable");
         }
 
         Graph graph(expression_data.back());
@@ -237,9 +197,12 @@ Graph evaluateExpression(const string& expression, const set<Graph>& who_set)
 
     
     bool is_complement = handleComplement(expression_data);
+    if (expression_data.front() == Instruction::KEYWORDS.at(Instruction::LOAD)) {
+        handleLoad(expression_data);
+    }
 
     if (expression_data.empty()) {
-        throw OperatorExceptoin("operator '!' expected variable");
+        throw OperatorException("operator '!' expected variable");
     }
 
     
@@ -254,13 +217,16 @@ Graph evaluateExpression(const string& expression, const set<Graph>& who_set)
     }
 
     if (expression_data.size() == 1) {
-        throw OperatorExceptoin("expected binary operator before '" + expression_data.back() + "'");
+        throw OperatorException("expected binary operator before '" + expression_data.back() + "'");
     }
 
     char Operator = expression_data.front().front();
-    //check isoperator? or just rely on swith
     expression_data.pop();
+
     is_complement = handleComplement(expression_data);
+    if (expression_data.front() == Instruction::KEYWORDS.at(Instruction::LOAD)) {
+        handleLoad(expression_data);
+    }
     
     current_graph = evaluateExpression(expression_data.front(), who_set);
     current_graph = (is_complement)? current_graph : !current_graph;
@@ -284,7 +250,8 @@ Graph evaluateExpression(const string& expression, const set<Graph>& who_set)
             break;
         
         default:
-            throw OperatorExceptoin("expected binary operator before '" + expression_data.back() + "'");
+            //load("removethis");
+            throw OperatorException("expected binary operator before '" + expression_data.back() + "'");
             break;
     }
     expression_data.pop();
@@ -311,7 +278,64 @@ bool handleComplement(queue<string>& expression_data)
 
     return complement_counter%2 == 0;
 }
-// Graph Instruction::evaluateSimpleExpression(const string& expression, const set<Graph>& who_set) 
-// {
-//     if (isalnum(expression.front() )
-// }
+void handleLoad(queue<string>& expression_data) 
+{
+    expression_data.pop(); //no use of load keyword
+    Graph graph = load(expression_data.front());
+    string new_expression = graph.makeLiteral();
+    expression_data.front() = new_expression;
+}
+Graph load(const string& filename)
+{
+    Graph result;
+    ifstream infile(filename, ios_base::binary);
+    if(!infile) {
+        throw FileException("could not open '" + filename + "'");
+    }
+
+    unsigned int num_vertices = 0;
+    unsigned int num_edges= 0;
+    infile.read((char*)&num_vertices, sizeof(unsigned int));
+    infile.read((char*)&num_edges, sizeof(unsigned int));
+
+    for (unsigned int i = 0; i< num_vertices; ++i) {
+        result.addVertex(readVertexBytes(infile));
+    }
+
+    for (unsigned int i = 0; i < num_edges; ++i) {
+        Vertex vertex_from(readVertexBytes(infile));        
+        Vertex vertex_to(readVertexBytes(infile));
+
+        result.addEdge(makeEdge(vertex_from, vertex_to));
+    }
+
+    return result;
+}
+
+void replaceGraph (set<Graph>& who_set, Graph& graph)
+{
+    if (who_set.find(graph) != who_set.end()) {
+        who_set.erase(graph); //finds graph with the same name, but data can be different
+    } 
+    who_set.insert(graph);
+}
+
+Vertex readVertexBytes(ifstream& infile)
+{
+    unsigned int vertex_name_lenght = 0;
+    infile.read((char*)&vertex_name_lenght, sizeof(unsigned int));
+    
+    string vertex_name(vertex_name_lenght, 0);
+    infile.read(&vertex_name[0], sizeof(unsigned int));
+
+    return Vertex(vertex_name);
+}
+
+
+void writeVertexBytes(ofstream& out, const Vertex& vertex) 
+{
+    string vertex_name = vertex.getName();
+    unsigned int vertex_name_length = vertex_name.size();
+    out.write((const char*)&vertex_name_length, sizeof(unsigned int));
+    out.write(&vertex_name[0], vertex_name_length);
+}

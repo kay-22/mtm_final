@@ -119,7 +119,7 @@ namespace graph
         
         
         //check if the calculator expression is  ('expression') without additional expressions
-        bool isEnclosedExpression() const;
+        bool isEnclosedExpression();// const;
         //checks if there is at least one ('expression'). doesn't have to be enclosed.
         bool isExpressionExists() const;
         //removes outer brackets from expression

@@ -233,9 +233,9 @@ vector<shared_ptr<Instruction>> Parser::makeInstructions()
     return result;
 }
 
-bool Parser::isEnclosedExpression() const
+bool Parser::isEnclosedExpression()//const
 {
-    
+    trimSideSpaces(current_word); //check if problem
     if (current_word.empty()) {
         return false;
     }
@@ -326,6 +326,16 @@ queue<string> Parser::getExpressionData()
                                                                  GRAPH_BRACKET.right);
                 }   
             getExpressionDataAux(temp_word, result, GRAPH_BRACKET);
+            continue;
+        }
+        else if (temp_word == Instruction::KEYWORDS.at(Instruction::keyword::LOAD)){
+            result.push(temp_word);
+            temp_word = "";
+            trimSideSpaces(current_word);
+            if (!isEnclosedExpression()) {
+                //throw load need ()
+            }
+            getExpressionDataAux(temp_word, result, Instruction::EXPRESSION_BRACKET);
             continue;
         }
         temp_word += current_ch;
