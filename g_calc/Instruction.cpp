@@ -19,6 +19,7 @@ using graph::Save;
 using graph::Load;
 using graph::Empty;
 using graph::Who;
+using graph::Help;
 using graph::BracketPattern;
 using graph::Parser;
 using graph::Graph;
@@ -37,7 +38,8 @@ const map<Instruction::keyword, string> Instruction::KEYWORDS = {
                                                                     {QUIT, "quit"}, 
                                                                     {SAVE, "save"}, 
                                                                     {LOAD, "load"},
-                                                                    {WHO, "who"}
+                                                                    {WHO, "who"},
+                                                                    {HELP, "help"}
                                                                 };
 
 static const int SAVE_GRAPH_VAR = 2;
@@ -47,6 +49,8 @@ static const int SAVE_FILENAME = 3;
 static const int DEC_VARIABLE = 0;
 static const int DEC_OPERATOR = 1;
 static const int DEC_EXPRESSION = 2;
+
+static const string HELP_MESSAGE = "Supported commands: print, delete, reset, quit, save, load, who, help";
 
 static Graph evaluateExpression(const string& expression, const std::set<Graph>& who_set);
 static bool handleComplement(queue<string>& expression_data);
@@ -173,6 +177,16 @@ Instruction::code Who::execute(set<Graph>& who_set, ostream& out)
     for (const Graph& graph : who_set) {
         out << graph.getName() << endl;
     }
+    return okCode;
+}
+
+Instruction::code Help::execute(set<Graph>& who_set, ostream& out)
+{
+    if (!data.back().empty()) {
+        throw BadCommandExpression("'help' does not take any arguments");
+    }
+
+    out << HELP_MESSAGE << endl;
     return okCode;
 }
 

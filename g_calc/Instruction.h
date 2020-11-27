@@ -31,7 +31,7 @@ namespace graph
         virtual code execute(std::set<Graph>& who_set, std::ostream& out) = 0;
         virtual ~Instruction() = default;
         
-        enum keyword {PRINT, DELETE, RESET, QUIT, SAVE, LOAD, WHO};
+        enum keyword {PRINT, DELETE, RESET, QUIT, SAVE, LOAD, WHO, HELP};
         static const std::map<keyword, std::string> KEYWORDS;
         static const BracketPattern EXPRESSION_BRACKET;
     };
@@ -109,6 +109,16 @@ namespace graph
         virtual code execute(std::set<Graph>& who_set, std::ostream& out) override;
         virtual ~Who() = default;
     };
+
+    
+    class Help : public Instruction
+    {
+    public:
+        Help(const std::vector<std::string>& data) : Instruction(data) {}
+        virtual code execute(std::set<Graph>& who_set, std::ostream& out) override;
+        virtual ~Help() = default;
+    };
+
 
 } // namespace graph
 

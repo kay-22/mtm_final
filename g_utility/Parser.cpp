@@ -13,6 +13,7 @@ using graph::Save;
 using graph::Load;
 using graph::Empty;
 using graph::Who;
+using graph::Help;
 using graph::MatchingSequenceParserException;
 using graph::GraphLiteralParserException;
 using graph::EmptyExpressionException;
@@ -764,6 +765,12 @@ shared_ptr<Instruction> makeCommand(const string& command_string, string instruc
 
     else if (command_string == Instruction::KEYWORDS.at(Instruction::WHO)) {
         command = make_shared<Who>(command_data);
+        
+    }
+
+    
+    else if (command_string == Instruction::KEYWORDS.at(Instruction::HELP)) {
+        command = make_shared<Help>(command_data);
         
     }
 
