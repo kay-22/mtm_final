@@ -1,5 +1,5 @@
-CC = /usr/local/bin/gcc
-CXX = /usr/local/bin/g++
+CC = gcc
+CXX = g++
 
 GRPH_H = graph/Vertex.h \
 	graph/Graph.h\
@@ -20,7 +20,7 @@ EXCEPT_H = g_except/Exception.h \
 	g_except/InstructionException.h \
 	g_except/ParserException.h
 
-OBJS = main.o \
+G_OBJS = main.o \
 	GraphCalculator.o \
 	Instruction.o \
 	Exception.o \
@@ -34,7 +34,9 @@ OBJS = main.o \
 	Parser.o \
 	VertexName.o \
 	Graph.o \
-	Vertex.o \
+	Vertex.o
+
+OBJS = ${G_OBJS} \
 	graph.o
 
 EXEC = gcalc
@@ -43,8 +45,8 @@ RELEASE =-DNDEBUG
 DEBUG =#-g
 COMP = -std=c++11 -Wall -Werror -pedantic-errors -fPIC
 
-${EXEC} : ${OBJS}
-	${CXX} ${DEBUG} ${OBJS} -o $@
+${EXEC} : ${G_OBJS}
+	${CXX} ${DEBUG} ${G_OBJS} -o $@
 
 #g++ -std=c++11 -I. -MM main.cpp g_calc/GraphCalculator.cpp g_calc/Instruction.cpp g_except/Exception.cpp g_except/GraphException.cpp g_except/InstructionException.cpp g_except/NameException.cpp g_except/ParserException.cpp g_utility/GCFileName.cpp g_utility/GraphName.cpp g_utility/Name.cpp g_utility/Parser.cpp g_utility/VertexName.cpp graph/Graph.cpp graph/Vertex.cpp
 
